@@ -8,3 +8,8 @@ This folder contains source examples created with the cinematic-site-builder dir
 - Source: `examples/ai-era-immersive-site/index.html`
 - Format: single-file static HTML with inline CSS and JavaScript
 
+## WY Cinematic Night Drive
+
+- Description: A self-contained scroll-driven night drive website example with procedural visuals.
+- Source: `examples/wy-cinematic-night-drive/index.html`
+- Format: single-file static HTML with inline CSS and JavaScript
