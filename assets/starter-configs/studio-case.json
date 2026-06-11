@@ -1,0 +1,117 @@
+{
+  "meta": {
+    "title": "Luma Works - Interactive Case Study",
+    "brand": "Luma Works",
+    "description": "A two-page cinematic studio site generated with cinematic-site-builder."
+  },
+  "theme": {
+    "color": "#a7f7ff",
+    "accent": "#ffcf8a",
+    "background": "#05070a",
+    "density": "premium"
+  },
+  "pages": [
+    {
+      "id": "home",
+      "label": "Home",
+      "route": "/",
+      "chapters": [
+        {
+          "id": "hero",
+          "label": "Studio",
+          "range": [0, 0.34],
+          "copy": {
+            "eyebrow": "Interactive Studio",
+            "title": "Digital stories with real-time depth",
+            "body": "Luma Works designs cinematic web systems where copy, motion, and WebGL share one progress model."
+          },
+          "scene": {
+            "preset": "light-ribbon",
+            "count": 5
+          }
+        },
+        {
+          "id": "method",
+          "label": "Method",
+          "range": [0.3, 0.72],
+          "copy": {
+            "eyebrow": "Method",
+            "title": "A fixed stage for changing narratives",
+            "body": "Scene presets provide the visual floor while Codex adapts content, pacing, and interaction."
+          },
+          "scene": {
+            "preset": "modular-interface",
+            "modules": 8
+          }
+        },
+        {
+          "id": "case-link",
+          "label": "Case",
+          "range": [0.68, 1],
+          "copy": {
+            "eyebrow": "Case Study",
+            "title": "Explore the launch system",
+            "body": "The second page uses the same runtime and validation contract with different chapter timing.",
+            "cta": "Open case",
+            "ctaHref": "/case"
+          },
+          "scene": {
+            "preset": "portal-transition",
+            "rings": 7
+          }
+        }
+      ]
+    },
+    {
+      "id": "case",
+      "label": "Case",
+      "route": "/case",
+      "chapters": [
+        {
+          "id": "case-hero",
+          "label": "Challenge",
+          "range": [0, 0.38],
+          "copy": {
+            "eyebrow": "Launch System",
+            "title": "A product reveal that moves like a film",
+            "body": "The case page starts with a spatial field and carries the same design language into proof and conversion."
+          },
+          "scene": {
+            "preset": "particle-field",
+            "density": "medium"
+          }
+        },
+        {
+          "id": "case-proof",
+          "label": "Proof",
+          "range": [0.34, 0.74],
+          "copy": {
+            "eyebrow": "Proof",
+            "title": "Content remains semantic while visuals stay live",
+            "body": "The DOM layer stays readable and indexable, while WebGL responds to phase, pointer, and device budgets."
+          },
+          "scene": {
+            "preset": "modular-interface",
+            "modules": 6
+          }
+        },
+        {
+          "id": "case-close",
+          "label": "Close",
+          "range": [0.7, 1],
+          "copy": {
+            "eyebrow": "Outcome",
+            "title": "A validated cinematic delivery path",
+            "body": "Build smoke, config validation, fallback checks, and visual smoke are built into the generated project.",
+            "cta": "Start yours",
+            "ctaHref": "/"
+          },
+          "scene": {
+            "preset": "portal-transition",
+            "rings": 8
+          }
+        }
+      ]
+    }
+  ]
+}

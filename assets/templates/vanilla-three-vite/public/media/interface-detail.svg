@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <rect width="960" height="540" fill="#080b12"/>
+  <rect x="72" y="56" width="816" height="428" rx="26" fill="#0d121b" stroke="#ffcf7a" stroke-opacity=".3" stroke-width="2"/>
+  <rect x="112" y="98" width="182" height="28" rx="14" fill="#ffcf7a" fill-opacity=".25"/>
+  <rect x="112" y="158" width="254" height="254" rx="28" fill="#7de7ff" fill-opacity=".1" stroke="#7de7ff" stroke-opacity=".34"/>
+  <rect x="416" y="158" width="390" height="48" rx="16" fill="#ffffff" fill-opacity=".1"/>
+  <rect x="416" y="232" width="316" height="48" rx="16" fill="#7de7ff" fill-opacity=".16"/>
+  <rect x="416" y="306" width="390" height="48" rx="16" fill="#ffffff" fill-opacity=".1"/>
+  <rect x="416" y="380" width="256" height="48" rx="16" fill="#ffcf7a" fill-opacity=".16"/>
+  <circle cx="239" cy="285" r="82" fill="#7de7ff" fill-opacity=".08" stroke="#7de7ff" stroke-opacity=".38"/>
+  <circle cx="239" cy="285" r="40" fill="#ffcf7a" fill-opacity=".14"/>
+  <g stroke="#7de7ff" stroke-opacity=".26">
+    <path d="M239 178v214"/>
+    <path d="M132 285h214"/>
+    <path d="M164 210l150 150"/>
+    <path d="M314 210l-150 150"/>
+  </g>
+  <g fill="#ffffff" fill-opacity=".48">
+    <rect x="448" y="174" width="288" height="12" rx="6"/>
+    <rect x="448" y="248" width="224" height="12" rx="6"/>
+    <rect x="448" y="322" width="296" height="12" rx="6"/>
+    <rect x="448" y="396" width="172" height="12" rx="6"/>
+  </g>
+</svg>

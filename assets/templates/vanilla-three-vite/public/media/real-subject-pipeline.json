@@ -1,0 +1,28 @@
+{
+  "id": "real-subject-3d-pipeline",
+  "version": 1,
+  "strategyOrder": [
+    "model",
+    "reconstructed-3d",
+    "hd-image-2.5d",
+    "procedural-fallback"
+  ],
+  "assetSlots": {
+    "modelUrl": "public/models/*.glb or public/models/*.gltf",
+    "realismImages": "public/media/canva/*.webp or public/media/canva/*.png",
+    "depthMaps": "public/media/canva/*-depth.png",
+    "referenceImages": "public/media/references/*"
+  },
+  "canvaExportGuidance": [
+    "transparent PNG/WebP cut-outs",
+    "2x or 4k exports",
+    "front view plus detail/material crops",
+    "optional night or atmosphere composite"
+  ],
+  "validationSignals": [
+    "body[data-render-mode=webgl]",
+    "body[data-zoom] changes after drag",
+    "first viewport shows main subject",
+    "mobile viewport has no horizontal overflow"
+  ]
+}

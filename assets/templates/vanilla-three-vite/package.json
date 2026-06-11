@@ -1,0 +1,24 @@
+{
+  "name": "neural-orb-cinematic-site",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "build:smoke": "node scripts/build-smoke.mjs",
+    "serve:smoke": "node scripts/serve-smoke.mjs",
+    "preview": "vite preview --host 127.0.0.1",
+    "validate:config": "node scripts/validate-config.mjs",
+    "test:logic": "node --test tests/logic.test.mjs",
+    "test:real-subject": "node --test tests/real-subject-preset.test.mjs",
+    "visual:smoke": "node scripts/visual-smoke.mjs"
+  },
+  "dependencies": {
+    "three": "^0.171.0",
+    "vite": "^6.0.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.1"
+  }
+}

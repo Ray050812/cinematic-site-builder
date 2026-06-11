@@ -1,0 +1,29 @@
+{
+  "name": "cinematic-site-builder",
+  "version": "0.1.0",
+  "description": "Build scroll-driven cinematic WebGL websites with Codex using bundled templates, runtime presets, and validation scripts.",
+  "license": "MIT",
+  "author": {
+    "name": "Cinematic Site Builder"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Cinematic Site Builder",
+    "shortDescription": "Generate Lusion-like cinematic animated sites.",
+    "longDescription": "A Codex plugin for creating 1-3 page cinematic, scroll-driven, WebGL/Three.js frontends with a real subject 3D pipeline, research-backed mouse-zoomable hero objects, video/media compositing presets, Canva/HD image realism layers, fallback rendering, and validation workflow.",
+    "developerName": "Cinematic Site Builder",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Codex skill",
+      "Vite/Three.js template",
+      "Scene presets",
+      "Validation scripts",
+      "Interactive 3D hero zoom",
+      "Video/WebGL compositing",
+      "Real subject 3D pipeline",
+      "Research-backed 3D subjects",
+      "Canva/HD image realism layers"
+    ],
+    "defaultPrompt": "Use cinematic-site-builder to create a Lusion-like one-page animated website with WebGL visuals, responsive copy layers, fallback rendering, and validation."
+  }
+}

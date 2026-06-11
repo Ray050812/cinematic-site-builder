@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "title": "Northline Studio - Digital Worlds",
+    "brand": "Northline Studio",
+    "description": "A cinematic creative studio portfolio generated with cinematic-site-builder."
+  },
+  "theme": {
+    "color": "#b9fff0",
+    "accent": "#ff9d7a",
+    "background": "#060606",
+    "density": "balanced"
+  },
+  "chapters": [
+    {
+      "id": "hero",
+      "label": "Studio",
+      "range": [0, 0.3],
+      "copy": {
+        "eyebrow": "Creative Technology",
+        "title": "Interactive worlds for ambitious brands",
+        "body": "We combine design, motion, 3D, and engineering into memorable real-time web experiences."
+      },
+      "scene": {
+        "preset": "light-ribbon",
+        "count": 6
+      }
+    },
+    {
+      "id": "work",
+      "label": "Work",
+      "range": [0.26, 0.7],
+      "copy": {
+        "eyebrow": "Selected Work",
+        "title": "Narrative systems, not isolated effects",
+        "body": "Every chapter shares one visual state so transitions feel continuous across copy, media, and 3D."
+      },
+      "scene": {
+        "preset": "modular-interface",
+        "modules": 7
+      }
+    },
+    {
+      "id": "contact",
+      "label": "Contact",
+      "range": [0.66, 1],
+      "copy": {
+        "eyebrow": "New Business",
+        "title": "Bring the next world online",
+        "body": "Use this template as a verified foundation for a premium interactive studio site.",
+        "cta": "Start a conversation"
+      },
+      "scene": {
+        "preset": "portal-transition",
+        "rings": 6
+      }
+    }
+  ]
+}

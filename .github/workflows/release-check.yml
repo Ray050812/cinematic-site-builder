@@ -1,0 +1,36 @@
+name: Release Check
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  plugin-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Audit plugin package
+        run: python skills/cinematic-site-builder/scripts/audit-cinematic-quality.py --plugin .
+
+  template-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install template dependencies
+        working-directory: assets/templates/vanilla-three-vite
+        run: npm install
+      - name: Validate template config and tests
+        working-directory: assets/templates/vanilla-three-vite
+        run: |
+          npm run validate:config
+          npm run test:logic
+          npm run test:real-subject
+          npm run build:smoke

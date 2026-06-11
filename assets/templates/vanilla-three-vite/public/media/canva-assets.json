@@ -1,0 +1,22 @@
+{
+  "workflow": "Canva or photo-editing exports for researched-3d-subject realism layers",
+  "exportGuidance": [
+    "Use transparent PNG/WebP for cut-out subjects when available.",
+    "Use 2x or 4k exports for hero reference cards.",
+    "Keep one front view, one side/detail crop, and optional night/texture variants.",
+    "Place exported files under public/media/canva/ and reference them from scene.realismImages or scene.canvaAssets.exports.",
+    "Record every third-party media source, author, license, and modification note in public/media/ATTRIBUTION.md."
+  ],
+  "exampleExports": [
+    {
+      "src": "/media/canva/subject-front.webp",
+      "role": "front-hd-reference",
+      "aspect": 1.6
+    },
+    {
+      "src": "/media/canva/subject-detail.webp",
+      "role": "material-detail",
+      "aspect": 1.4
+    }
+  ]
+}

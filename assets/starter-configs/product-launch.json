@@ -1,0 +1,59 @@
+{
+  "meta": {
+    "title": "Vanta One - Product Launch",
+    "brand": "Vanta One",
+    "description": "A cinematic product launch page generated with cinematic-site-builder."
+  },
+  "theme": {
+    "color": "#9dd6ff",
+    "accent": "#d9ff72",
+    "background": "#03070c",
+    "density": "premium"
+  },
+  "chapters": [
+    {
+      "id": "hero",
+      "label": "Launch",
+      "range": [0, 0.28],
+      "copy": {
+        "eyebrow": "Product Launch",
+        "title": "A device story with real-time presence",
+        "body": "Use cinematic depth, orbital movement, and responsive copy to make the product feel tangible."
+      },
+      "scene": {
+        "preset": "particle-field",
+        "density": "medium"
+      }
+    },
+    {
+      "id": "features",
+      "label": "Features",
+      "range": [0.24, 0.66],
+      "copy": {
+        "eyebrow": "Feature System",
+        "title": "Every feature enters as a scene beat",
+        "body": "The page maps scroll progress into visual phases instead of stacking independent animations."
+      },
+      "scene": {
+        "preset": "modular-interface",
+        "modules": 9
+      }
+    },
+    {
+      "id": "cta",
+      "label": "Reserve",
+      "range": [0.62, 1],
+      "copy": {
+        "eyebrow": "Reserve",
+        "title": "Open the waitlist with a memorable finish",
+        "body": "A portal-style convergence creates a clear final action without losing the visual system.",
+        "cta": "Join waitlist"
+      },
+      "scene": {
+        "preset": "portal-transition",
+        "rings": 9,
+        "intensity": 0.74
+      }
+    }
+  ]
+}

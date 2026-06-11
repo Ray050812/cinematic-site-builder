@@ -1,0 +1,184 @@
+{
+  "meta": {
+    "title": "Wuhan - Yellow Crane Tower Immersive",
+    "brand": "Wuhan Lens",
+    "description": "A research-backed cinematic city site with Yellow Crane Tower as the interactive 3D hero subject."
+  },
+  "theme": {
+    "color": "#66e8ff",
+    "accent": "#f4c86a",
+    "background": "#030506",
+    "density": "premium"
+  },
+  "chapters": [
+    {
+      "id": "hero",
+      "label": "Tower",
+      "range": [0, 0.25],
+      "copy": {
+        "eyebrow": "Wuhan Landmark",
+        "title": "Yellow Crane Tower rises through river light",
+        "body": "A cinematic WebGL reconstruction uses tiered eaves, red columns, golden windows, river haze, and orbiting detail points as the main interactive subject."
+      },
+      "scene": {
+        "preset": "researched-3d-subject",
+        "subjectType": "landmark",
+        "landmark": "yellow-crane-tower",
+        "location": "Wuhan, Hubei, China",
+        "architecture": "tiered-pavilion",
+        "scale": 1.16,
+        "levels": 5,
+        "particles": 720,
+        "roofColor": "#9a672d",
+        "roofTileColor": "#9a672d",
+        "roofEdgeColor": "#173932",
+        "wallColor": "#c9ad7a",
+        "columnColor": "#7e251d",
+        "goldColor": "#d7aa59",
+        "windowGlow": "#ffd98a",
+        "imageLayers": 5,
+        "imageOrbitRadius": 1.32,
+        "imageRotateSpeed": 0.1,
+        "photoFollowModel": true,
+        "photoOffsetX": -0.16,
+        "photoOffsetY": 0.03,
+        "photoOffsetZ": -0.7,
+        "photoRotationX": -0.035,
+        "photoRotationY": 0.05,
+        "photoScale": 1.02,
+        "subjectPipeline": {
+          "id": "real-subject-3d-pipeline",
+          "strategyOrder": ["model", "reconstructed-3d", "hd-image-2.5d", "procedural-fallback"],
+          "selectedStrategy": "hd-image-2.5d-with-architectural-procedural-v2-fallback",
+          "realismTarget": "highest-available",
+          "requiresResearch": true,
+          "canUseCanva": true,
+          "fallbackDisclosure": "This starter uses procedural Yellow Crane Tower geometry plus HD image rotator layers until a real licensed model or real Canva exports are attached."
+        },
+        "subject": {
+          "name": "Yellow Crane Tower",
+          "nativeName": "\u9ec4\u9e64\u697c",
+          "city": "Wuhan",
+          "category": "landmark",
+          "visualCues": [
+            "multi-tier traditional Chinese pavilion silhouette",
+            "sweeping upturned eaves",
+            "green roof tiles with golden trim",
+            "red structural columns",
+            "warm tower body above river haze"
+          ],
+          "materialCues": ["green tile roof", "red columns", "gold trim", "warm pavilion body"]
+        },
+        "references": [
+          {
+            "title": "Yellow Crane Tower overview",
+            "url": "https://en.wikipedia.org/wiki/Yellow_Crane_Tower"
+          },
+          {
+            "title": "Chinese Yellow Crane Tower overview",
+            "url": "https://zh.wikipedia.org/wiki/%E9%BB%84%E9%B9%A4%E6%A5%BC"
+          },
+          {
+            "title": "Wuhan destinations context",
+            "url": "https://en.wikipedia.org/wiki/Wuhan"
+          },
+          {
+            "title": "Wikimedia Commons Yellow Crane Tower photo",
+            "url": "https://commons.wikimedia.org/wiki/File:CN_-_Hubei_-_Wuhan_-_Kranichpagode.jpg"
+          }
+        ],
+        "realismImages": [
+          {
+            "src": "/media/canva/yellow-crane-tower-photo.jpg",
+            "role": "real-front-photo",
+            "aspect": 0.75,
+            "height": 1.28,
+            "angle": 0.18
+          },
+          {
+            "src": "/media/interface-overview.svg",
+            "role": "front-hd-reference",
+            "aspect": 1.62,
+            "height": 0.76,
+            "angle": 2.55
+          },
+          {
+            "src": "/media/interface-detail.svg",
+            "role": "detail-hd-reference",
+            "aspect": 1.5,
+            "height": 0.7,
+            "angle": 4.75
+          }
+        ],
+        "canvaAssets": {
+          "workflow": "export-transparent-png-or-webp-at-2x",
+          "exports": [
+            {
+              "src": "/media/canva/yellow-crane-tower-photo.jpg",
+              "role": "local-real-photo-projection",
+              "aspect": 0.75
+            },
+            {
+              "src": "/media/interface-overview.svg",
+              "role": "canva-composite-front",
+              "aspect": 1.62
+            },
+            {
+              "src": "/media/interface-detail.svg",
+              "role": "canva-texture-detail",
+              "aspect": 1.5
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "river",
+      "label": "River",
+      "range": [0.22, 0.5],
+      "copy": {
+        "eyebrow": "Yangtze Crossing",
+        "title": "The city folds around bridges, water, and night movement",
+        "body": "Video and image sources can be composited into the same scroll-driven field once research assets are attached."
+      },
+      "scene": {
+        "preset": "video-composite",
+        "poster": "/media/interface-overview.svg",
+        "media": ["/media/interface-detail.svg"],
+        "particles": 320
+      }
+    },
+    {
+      "id": "texture",
+      "label": "Texture",
+      "range": [0.46, 0.74],
+      "copy": {
+        "eyebrow": "Cultural Surface",
+        "title": "Reference images become layered depth and motion",
+        "body": "The plugin turns researched visual cues into panels, light paths, and WebGL composition rather than static brochure sections."
+      },
+      "scene": {
+        "preset": "depth-composite",
+        "panels": 6,
+        "particles": 420,
+        "media": ["/media/interface-overview.svg", "/media/interface-detail.svg"]
+      }
+    },
+    {
+      "id": "route",
+      "label": "Route",
+      "range": [0.7, 1],
+      "copy": {
+        "eyebrow": "Interactive Itinerary",
+        "title": "A researched subject can anchor the whole city narrative",
+        "body": "Scroll, pointer movement, and drag-to-zoom keep the landmark alive while the site transitions through travel, history, food, and culture layers.",
+        "cta": "Explore Wuhan"
+      },
+      "scene": {
+        "preset": "portal-transition",
+        "rings": 9,
+        "intensity": 0.9
+      }
+    }
+  ]
+}

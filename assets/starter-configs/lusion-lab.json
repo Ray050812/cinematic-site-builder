@@ -1,0 +1,153 @@
+{
+  "meta": {
+    "title": "Fluxframe Lab - Cinematic Interface",
+    "brand": "Fluxframe Lab",
+    "description": "A richer Lusion-like cinematic demo generated with cinematic-site-builder."
+  },
+  "theme": {
+    "color": "#7de7ff",
+    "accent": "#ffcf7a",
+    "background": "#04060a",
+    "density": "premium"
+  },
+  "pages": [
+    {
+      "id": "home",
+      "label": "Home",
+      "route": "/",
+      "chapters": [
+        {
+          "id": "hero",
+          "label": "Signal",
+          "range": [0, 0.22],
+          "copy": {
+            "eyebrow": "Cinematic Interface Lab",
+            "title": "A living launch system for spatial products",
+            "body": "Fluxframe turns product narrative, interface proof, and real-time motion into one scroll-driven visual system."
+          },
+          "scene": {
+            "preset": "video-composite",
+            "poster": "/media/interface-overview.svg",
+            "particles": 220
+          }
+        },
+        {
+          "id": "core",
+          "label": "Core",
+          "range": [0.18, 0.44],
+          "copy": {
+            "eyebrow": "Product Core",
+            "title": "A tangible object, even before assets arrive",
+            "body": "A procedural orbit scene gives Codex a strong default when the user has no 3D model yet."
+          },
+          "scene": {
+            "preset": "product-orbit",
+            "rings": 3,
+            "satellites": 8
+          }
+        },
+        {
+          "id": "media",
+          "label": "Media",
+          "range": [0.4, 0.64],
+          "copy": {
+            "eyebrow": "Depth Composite",
+            "title": "Screens bend into the same progress state",
+            "body": "Shader planes make product imagery, video stills, or case visuals feel embedded in the WebGL stage."
+          },
+          "scene": {
+            "preset": "depth-composite",
+            "panels": 5,
+            "particles": 300,
+            "media": [
+              "/media/interface-overview.svg",
+              "/media/interface-detail.svg"
+            ]
+          }
+        },
+        {
+          "id": "gallery",
+          "label": "Gallery",
+          "range": [0.6, 0.82],
+          "copy": {
+            "eyebrow": "Case Rhythm",
+            "title": "A gallery that moves like a camera pass",
+            "body": "Repeated work or proof cards can stay semantic while the visual layer carries depth and parallax."
+          },
+          "scene": {
+            "preset": "gallery-scroll-sync",
+            "items": 7
+          }
+        },
+        {
+          "id": "launch",
+          "label": "Launch",
+          "range": [0.78, 1],
+          "copy": {
+            "eyebrow": "Validated Delivery",
+            "title": "From prompt to verified cinematic site",
+            "body": "The plugin now includes richer presets, page-aware config, fallbacks, and build smoke validation.",
+            "cta": "Open case",
+            "ctaHref": "/case"
+          },
+          "scene": {
+            "preset": "portal-transition",
+            "rings": 9,
+            "intensity": 0.82
+          }
+        }
+      ]
+    },
+    {
+      "id": "case",
+      "label": "Case",
+      "route": "/case",
+      "chapters": [
+        {
+          "id": "case-hero",
+          "label": "Brief",
+          "range": [0, 0.34],
+          "copy": {
+            "eyebrow": "Case Study",
+            "title": "A launch page shaped as an interactive film",
+            "body": "The case route proves the same runtime can carry a second page with its own chapter pacing."
+          },
+          "scene": {
+            "preset": "light-ribbon",
+            "count": 6
+          }
+        },
+        {
+          "id": "case-proof",
+          "label": "Proof",
+          "range": [0.3, 0.7],
+          "copy": {
+            "eyebrow": "Proof Layer",
+            "title": "Interface modules reveal the operating model",
+            "body": "Floating modules, rails, and phase-driven opacity create a technical proof section without custom code."
+          },
+          "scene": {
+            "preset": "modular-interface",
+            "modules": 10
+          }
+        },
+        {
+          "id": "case-close",
+          "label": "Close",
+          "range": [0.66, 1],
+          "copy": {
+            "eyebrow": "Close",
+            "title": "A reusable cinematic system, not a one-off trick",
+            "body": "Codex edits content and parameters while the plugin preserves the visual architecture.",
+            "cta": "Start a build",
+            "ctaHref": "/"
+          },
+          "scene": {
+            "preset": "portal-transition",
+            "rings": 7
+          }
+        }
+      ]
+    }
+  ]
+}

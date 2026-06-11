@@ -1,0 +1,47 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#05070a" />
+    <title>Cinematic Site</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "/vendor/three.module.min.js",
+          "three/addons/": "/vendor/addons/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <canvas id="scene" aria-hidden="true"></canvas>
+    <div class="light-field" aria-hidden="true"></div>
+    <div class="noise" aria-hidden="true"></div>
+    <div class="film-layer" aria-hidden="true"></div>
+    <div class="stage-chrome" aria-hidden="true">
+      <i class="stage-plus plus-a"></i>
+      <i class="stage-plus plus-b"></i>
+      <i class="stage-plus plus-c"></i>
+      <i class="stage-plus plus-d"></i>
+      <i class="stage-rail rail-left"></i>
+      <i class="stage-rail rail-bottom"></i>
+      <span class="stage-note note-left">RENDER CORE</span>
+      <span class="stage-note note-right">ORBITAL WEBGL</span>
+    </div>
+    <header class="site-header">
+      <a class="brand" href="#top" data-brand>Brand</a>
+      <nav class="nav" data-nav aria-label="Sections"></nav>
+    </header>
+    <main id="chapters" class="chapters" aria-live="polite"></main>
+    <aside class="hud" aria-hidden="true">
+      <span data-active-label>hero</span>
+      <span data-progress-label>0%</span>
+    </aside>
+    <div class="progress-track" aria-hidden="true"><span data-progress-bar></span></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+
+

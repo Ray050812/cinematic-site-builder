@@ -1,0 +1,5 @@
+interface:
+  display_name: "Cinematic Site Builder"
+  short_description: "Generate Lusion-like animated WebGL websites."
+  brand_color: "#8CEBFF"
+  default_prompt: "Use $cinematic-site-builder to create a cinematic scroll-driven website with WebGL visuals, fallback rendering, and validation."
