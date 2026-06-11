@@ -44,7 +44,7 @@ On Windows, use escaped backslashes or forward slashes:
       "name": "cinematic-site-builder",
       "source": {
         "source": "local",
-        "path": "C:/Users/you/Projects/cinematic-site-builder"
+        "path": "<absolute-path-to-cinematic-site-builder>"
       }
     }
   ]
