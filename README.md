@@ -1,4 +1,6 @@
-﻿# Cinematic Site Builder
+﻿Example site: [AI Era Immersive Site](https://ai-era-immersive-site.vercel.app/)
+
+# Cinematic Site Builder
 
 `cinematic-site-builder` is a Codex plugin for generating 1-3 page Lusion-like cinematic frontends. It packages the agent workflow, Vite/Three.js project template, scroll-driven runtime, scene preset library, starter configs, and validation scripts in one installable plugin.
 
