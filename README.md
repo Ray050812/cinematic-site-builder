@@ -129,6 +129,10 @@ python skills/cinematic-site-builder/scripts/audit-cinematic-quality.py --plugin
 
 The GitHub Actions workflow in `.github/workflows/release-check.yml` runs the plugin audit plus the template config/tests/build smoke checks.
 
+## Contributors
+
+- [WY (@hoanacantincus-cmd)](https://github.com/hoanacantincus-cmd)
+
 ## Quality Gate
 
 Before calling a generated site ready, Codex should verify:
