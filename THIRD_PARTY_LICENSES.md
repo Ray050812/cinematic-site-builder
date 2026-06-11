@@ -14,6 +14,8 @@ This project vendors or references third-party software so generated sites can r
   - `assets/templates/vanilla-three-vite/public/vendor/addons/utils/BufferGeometryUtils.js`
 - Upstream: https://github.com/mrdoob/three.js
 
+The AI Era immersive example also imports Three.js at runtime from `https://esm.sh/three@0.165.0`. See `examples/ai-era-immersive-site/THIRD_PARTY_LICENSES.md`.
+
 ## Vite
 
 - Package: `vite`

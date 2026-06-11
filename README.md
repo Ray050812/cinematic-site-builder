@@ -1,4 +1,4 @@
-﻿Example site: [AI Era Immersive Site](https://ai-era-immersive-site.vercel.app/)
+﻿Example site: [AI Era Immersive Site](https://ai-era-immersive-site.vercel.app/) - source in `examples/ai-era-immersive-site/`
 
 # Cinematic Site Builder
 

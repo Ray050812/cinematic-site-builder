@@ -1,0 +1,2788 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="&#36814;&#25509; AI &#26102;&#20195;&#65306;&#19968;&#20010;&#28378;&#21160;&#39537;&#21160;&#12289;3D &#35270;&#35273;&#21644;&#20132;&#20114;&#21465;&#20107;&#26500;&#25104;&#30340;&#27785;&#28024;&#24335;&#32593;&#31449;&#21407;&#22411;&#12290;"
+    />
+    <title>&#36814;&#25509; AI &#26102;&#20195;</title>
+    <style data-inline="ai-era-color-sphere-22-slower-clockwise-plane">
+:root {
+  color-scheme: dark;
+  --bg: #050608;
+  --ink: #f7fbff;
+  --muted: rgba(247, 251, 255, 0.64);
+  --faint: rgba(247, 251, 255, 0.12);
+  --line: rgba(247, 251, 255, 0.22);
+  --blue: #76d8ff;
+  --blue-strong: #1f9bff;
+  --warm: #fff4d7;
+  --dark-button: #f7fbff;
+  --dark-text: #050608;
+  --font-ui: "Inter", "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-display: "Inter", "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 46%, #101725 0, #050608 48%, #020304 100%);
+  color: var(--ink);
+  font-family: var(--font-ui);
+}
+
+body.is-loading {
+  overflow: hidden;
+}
+
+body.menu-open {
+  overflow: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  border: 0;
+  font: inherit;
+}
+
+#scene-canvas,
+.light-field,
+.noise-layer,
+.stage-chrome,
+.experience-shell {
+  position: fixed;
+  inset: 0;
+}
+
+#scene-canvas {
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  background: #050608;
+}
+
+.light-field {
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(118, 216, 255, 0.08), transparent 28%, transparent 72%, rgba(255, 244, 215, 0.08)),
+    radial-gradient(circle at 50% 48%, transparent 0 22%, rgba(5, 6, 8, 0.2) 56%, rgba(2, 3, 4, 0.9) 100%);
+  mix-blend-mode: screen;
+}
+
+.noise-layer {
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.16;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(to bottom, transparent, black 18%, black 82%, transparent);
+}
+
+.stage-chrome {
+  z-index: 4;
+  pointer-events: none;
+  color: rgba(247, 251, 255, 0.72);
+}
+
+.stage-plus {
+  position: absolute;
+  width: 1.05rem;
+  height: 1.05rem;
+  opacity: 0.76;
+}
+
+.stage-plus::before,
+.stage-plus::after {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  content: "";
+  background: currentColor;
+  transform: translateX(-50%);
+}
+
+.stage-plus::after {
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 1px;
+  transform: translateY(-50%);
+}
+
+.plus-a {
+  left: 5rem;
+  bottom: 1.45rem;
+}
+
+.plus-b {
+  left: 34.7%;
+  bottom: 1.45rem;
+}
+
+.plus-c {
+  right: 34.7%;
+  bottom: 1.45rem;
+}
+
+.plus-d {
+  right: 5rem;
+  bottom: 1.45rem;
+}
+
+.stage-rail {
+  position: absolute;
+  opacity: 0.5;
+  background: rgba(247, 251, 255, 0.22);
+}
+
+.rail-left {
+  left: 5rem;
+  bottom: 2rem;
+  width: 11rem;
+  height: 1px;
+}
+
+.rail-bottom {
+  left: 50%;
+  bottom: 1.95rem;
+  width: 10rem;
+  height: 1px;
+  transform: translateX(-50%);
+}
+
+.stage-note {
+  position: absolute;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  opacity: 0.48;
+}
+
+.note-left {
+  left: 1.85rem;
+  top: 48%;
+}
+
+.note-right {
+  right: 2.05rem;
+  top: 18%;
+}
+
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  gap: 1rem;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(118, 216, 255, 0.14), transparent 28%),
+    #050608;
+  color: var(--ink);
+  pointer-events: auto;
+  transition: opacity 720ms ease, visibility 720ms ease;
+}
+
+.experience-ready .preloader {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.preloader-mark {
+  display: grid;
+  width: 5.25rem;
+  height: 5.25rem;
+  place-items: center;
+  border: 1px solid rgba(247, 251, 255, 0.32);
+  border-radius: 50%;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.preloader-meter {
+  width: min(18rem, 64vw);
+  height: 1px;
+  overflow: hidden;
+  background: rgba(247, 251, 255, 0.18);
+}
+
+.preloader-meter span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--ink);
+  transform-origin: left;
+  animation: load-meter 1400ms cubic-bezier(0.72, 0, 0.16, 1) both;
+}
+
+.preloader p {
+  margin: 0;
+  color: rgba(247, 251, 255, 0.62);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+@keyframes load-meter {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.cursor-core,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 58;
+  pointer-events: none;
+  transform: translate3d(-50%, -50%, 0);
+}
+
+.cursor-core {
+  width: 0.38rem;
+  height: 0.38rem;
+  border-radius: 50%;
+  background: var(--ink);
+  mix-blend-mode: difference;
+}
+
+.cursor-ring {
+  width: 2.7rem;
+  height: 2.7rem;
+  border: 1px solid rgba(247, 251, 255, 0.48);
+  border-radius: 50%;
+  transition: width 220ms ease, height 220ms ease, border-color 220ms ease;
+}
+
+.is-interacting .cursor-ring {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-color: rgba(118, 216, 255, 0.72);
+}
+
+.site-header {
+  position: fixed;
+  z-index: 20;
+  top: 3.125rem;
+  left: 4rem;
+  right: 4rem;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  color: var(--ink);
+  pointer-events: none;
+}
+
+.brand-mark,
+.top-nav,
+.header-actions {
+  pointer-events: auto;
+}
+
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: fit-content;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.brand-glyph {
+  position: relative;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+}
+
+.brand-glyph::before,
+.brand-glyph::after {
+  position: absolute;
+  content: "";
+  inset: 0.55rem;
+  border: 1px solid var(--blue);
+  transform: rotate(45deg);
+}
+
+.brand-glyph::after {
+  inset: 0.95rem;
+  background: var(--ink);
+  border: 0;
+}
+
+.top-nav {
+  display: flex;
+  gap: 0.6rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: rgba(247, 251, 255, 0.68);
+}
+
+.top-nav a {
+  display: inline-flex;
+  min-width: 3.5rem;
+  min-height: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  transition: color 220ms ease, border-color 220ms ease, background 220ms ease, transform 220ms ease;
+}
+
+.top-nav a:hover,
+.top-nav a:focus-visible,
+.top-nav a.is-active {
+  color: var(--ink);
+}
+
+.top-nav a.is-active {
+  border-color: rgba(247, 251, 255, 0.52);
+  background: rgba(247, 251, 255, 0.06);
+}
+
+.top-nav a:hover,
+.top-nav a:focus-visible {
+  transform: translateY(-1px);
+}
+
+.header-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.sound-toggle {
+  display: inline-flex;
+  width: 2.875rem;
+  height: 2.875rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.18rem;
+  border-radius: 50%;
+  background: rgba(247, 251, 255, 0.12);
+  color: var(--ink);
+  cursor: pointer;
+  backdrop-filter: blur(18px);
+  transition: transform 220ms ease, background 220ms ease;
+}
+
+.sound-toggle:hover,
+.sound-toggle:focus-visible,
+.sound-toggle[aria-pressed="true"] {
+  transform: translateY(-2px);
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.sound-toggle span {
+  width: 0.15rem;
+  height: 0.7rem;
+  background: currentColor;
+  transform-origin: bottom;
+  animation: sound-bar 900ms ease-in-out infinite;
+}
+
+.sound-toggle span:nth-child(2) {
+  height: 1rem;
+  animation-delay: 120ms;
+}
+
+.sound-toggle span:nth-child(3) {
+  height: 0.52rem;
+  animation-delay: 240ms;
+}
+
+.sound-toggle[aria-pressed="false"] span {
+  animation-play-state: paused;
+  transform: scaleY(0.35);
+}
+
+@keyframes sound-bar {
+  0%,
+  100% {
+    transform: scaleY(0.42);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.pill-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 6.375rem;
+  height: 2.875rem;
+  padding: 0 1.25rem;
+  overflow: hidden;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  line-height: 1;
+  transition: transform 220ms ease, background 220ms ease, color 220ms ease;
+}
+
+.pill-button.dark {
+  background: var(--dark-button);
+  color: var(--dark-text);
+}
+
+.pill-button.light {
+  gap: 0.7rem;
+  background: rgba(247, 251, 255, 0.12);
+  color: var(--ink);
+  backdrop-filter: blur(18px);
+}
+
+.pill-button:hover,
+.pill-button:focus-visible {
+  transform: translateY(-2px);
+}
+
+.roll-text {
+  position: relative;
+  display: block;
+  height: 1em;
+  overflow: hidden;
+}
+
+.roll-text span {
+  display: block;
+  transition: transform 260ms ease;
+}
+
+.pill-button:hover .roll-text span,
+.menu-open .menu-toggle .roll-text span {
+  transform: translateY(-100%);
+}
+
+.button-dots {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.button-dots i {
+  width: 0.28rem;
+  height: 0.28rem;
+  border-radius: 50%;
+  background: currentColor;
+  transition: transform 260ms ease;
+}
+
+.menu-open .button-dots i:first-child {
+  transform: translateX(0.25rem) rotate(45deg) scaleX(2.4);
+}
+
+.menu-open .button-dots i:last-child {
+  transform: translateX(-0.25rem) rotate(-45deg) scaleX(2.4);
+}
+
+.menu-panel {
+  position: fixed;
+  z-index: 18;
+  top: 6.75rem;
+  right: 4rem;
+  width: 19.5rem;
+  min-height: 34rem;
+  padding: 1rem 0;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(2rem) rotate(-3deg);
+  transition: opacity 320ms ease, transform 420ms cubic-bezier(0.2, 0.9, 0.16, 1);
+}
+
+.menu-open .menu-panel {
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateY(0) rotate(-3deg);
+}
+
+.menu-panel::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  border: 1px solid rgba(247, 251, 255, 0.16);
+  background: rgba(247, 251, 255, 0.08);
+  backdrop-filter: blur(28px);
+  transform: skewY(-2deg);
+}
+
+.menu-links,
+.menu-note {
+  position: relative;
+}
+
+.menu-links {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1rem 1.2rem 2rem;
+}
+
+.menu-links a {
+  position: relative;
+  display: block;
+  height: 3.75rem;
+  overflow: hidden;
+  padding: 0.95rem 1.25rem;
+  color: var(--ink);
+  font-size: 1.55rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.menu-links a::before {
+  position: absolute;
+  inset: 0.35rem 0.1rem;
+  content: "";
+  opacity: 0;
+  background: var(--ink);
+  transform: scale(0.86);
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.menu-links a span {
+  position: relative;
+  display: block;
+  z-index: 1;
+  transition: color 220ms ease, transform 260ms ease;
+}
+
+.menu-links a:hover::before,
+.menu-links a:focus-visible::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.menu-links a:hover span,
+.menu-links a:focus-visible span {
+  color: var(--bg);
+  transform: translateY(-100%);
+}
+
+.menu-note {
+  margin: 2rem 1.3rem 0;
+  padding: 1.35rem;
+  color: var(--ink);
+}
+
+.menu-note p {
+  margin: 0 0 1.4rem;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.12;
+}
+
+.menu-note a {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  border-bottom: 1px solid var(--ink);
+  font-size: 0.875rem;
+  font-weight: 800;
+}
+
+.experience-shell {
+  z-index: 5;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.chapter {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translateY(3rem);
+  transition: opacity 420ms ease, transform 520ms ease;
+  pointer-events: none;
+}
+
+.chapter.is-active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.chapter-copy {
+  position: absolute;
+  z-index: 2;
+  max-width: 44rem;
+}
+
+.hero-copy {
+  left: 50%;
+  top: 50%;
+  width: min(64rem, calc(100vw - 8rem));
+  text-align: center;
+  transform: translate(-50%, -42%);
+}
+
+.offset-copy {
+  left: 4rem;
+  top: 23%;
+}
+
+.final-copy {
+  left: 50%;
+  top: 45%;
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1,
+h2 {
+  font-family: var(--font-display);
+  font-weight: 900;
+  line-height: 0.98;
+  letter-spacing: 0;
+}
+
+h1 {
+  font-size: 5.75rem;
+}
+
+h2 {
+  font-size: 5rem;
+}
+
+.chapter-copy p,
+.chapter-heading p {
+  max-width: 34rem;
+  margin-top: 1.35rem;
+  color: var(--muted);
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.75;
+}
+
+.hero-copy p,
+.final-copy p {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.primary-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-height: 3.25rem;
+  margin-top: 2.2rem;
+  padding: 0 1.25rem 0 1.45rem;
+  border: 1px solid rgba(247, 251, 255, 0.28);
+  background: rgba(247, 251, 255, 0.1);
+  color: var(--ink);
+  font-size: 0.875rem;
+  font-weight: 800;
+  backdrop-filter: blur(18px);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02), 0 0 34px rgba(118, 216, 255, 0.06);
+  transition: transform 220ms ease, border-color 220ms ease, background 220ms ease, box-shadow 220ms ease;
+}
+
+.primary-cta:hover,
+.primary-cta:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(118, 216, 255, 0.88);
+  background: rgba(118, 216, 255, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(118, 216, 255, 0.16), 0 0 46px rgba(118, 216, 255, 0.14);
+}
+
+.primary-cta svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  stroke-width: 1.7;
+}
+
+.light-cta {
+  border-color: rgba(255, 244, 215, 0.5);
+}
+
+.scroll-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 2.5rem;
+  color: rgba(247, 251, 255, 0.58);
+  font-size: 0.75rem;
+  font-weight: 800;
+  line-height: 1;
+  transform: translateX(-50%);
+}
+
+.floating-captions {
+  position: absolute;
+  inset: 0;
+  color: rgba(247, 251, 255, 0.5);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.floating-captions span {
+  position: absolute;
+  padding: 0.6rem 0.75rem;
+  border-top: 1px solid rgba(247, 251, 255, 0.2);
+}
+
+.floating-captions span:nth-child(1) {
+  left: 62%;
+  top: 24%;
+}
+
+.floating-captions span:nth-child(2) {
+  left: 72%;
+  top: 55%;
+}
+
+.floating-captions span:nth-child(3) {
+  left: 48%;
+  top: 72%;
+}
+
+.chapter-heading {
+  position: absolute;
+  left: 4rem;
+  top: 10rem;
+  z-index: 2;
+}
+
+.chapter-heading h2 {
+  font-size: 4rem;
+}
+
+.capability-grid {
+  position: absolute;
+  left: 4rem;
+  right: 4rem;
+  bottom: 4.5rem;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  pointer-events: auto;
+}
+
+.capability-item {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-height: 8.5rem;
+  padding: 1.25rem 1.35rem 1.5rem;
+  overflow: hidden;
+  border-right: 0;
+  border-bottom: 0;
+  border-left: 0;
+  border-top: 1px solid transparent;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+  transition: background 220ms ease, color 220ms ease;
+}
+
+.capability-item:nth-child(odd) {
+  border-right: 1px solid var(--line);
+}
+
+.capability-item::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  opacity: 0;
+  background: linear-gradient(90deg, rgba(118, 216, 255, 0.18), rgba(255, 244, 215, 0.08));
+  transform: translateX(-16%);
+  transition: opacity 220ms ease, transform 320ms ease;
+}
+
+.capability-item:hover::before,
+.capability-item:focus-visible::before,
+.capability-item.is-focused::before {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.capability-kicker,
+.capability-title,
+.capability-desc {
+  position: relative;
+}
+
+.capability-kicker {
+  display: block;
+  margin-bottom: 1.2rem;
+  color: rgba(247, 251, 255, 0.45);
+  font-size: 0.75rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.capability-title {
+  display: block;
+  font-size: 3.2rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.capability-desc {
+  display: block;
+  width: min(24rem, 80%);
+  margin-top: 1rem;
+  color: rgba(247, 251, 255, 0.62);
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.7;
+}
+
+.site-footer {
+  position: absolute;
+  left: 4rem;
+  right: 4rem;
+  bottom: 2.5rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  color: rgba(247, 251, 255, 0.58);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.site-footer span {
+  margin-right: auto;
+  color: var(--ink);
+}
+
+.scene-hud {
+  position: fixed;
+  z-index: 22;
+  left: 4rem;
+  bottom: 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  pointer-events: none;
+  color: rgba(247, 251, 255, 0.7);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.scene-hud::before {
+  content: "";
+  width: 2.25rem;
+  height: 1px;
+  background: rgba(247, 251, 255, 0.36);
+}
+
+.scene-index {
+  color: var(--ink);
+}
+
+.hover-preview {
+  position: fixed;
+  z-index: 23;
+  right: 4rem;
+  bottom: 3.1rem;
+  display: grid;
+  min-width: 14rem;
+  gap: 0.35rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(247, 251, 255, 0.16);
+  background: rgba(5, 6, 8, 0.42);
+  color: var(--ink);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(1rem) rotate(-1.5deg);
+  transition: opacity 240ms ease, transform 320ms ease;
+  backdrop-filter: blur(18px);
+}
+
+.hover-preview.is-visible {
+  opacity: 1;
+  transform: translateY(0) rotate(-1.5deg);
+}
+
+.hover-preview span,
+.hover-preview em {
+  color: rgba(247, 251, 255, 0.55);
+  font-size: 0.72rem;
+  font-style: normal;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.hover-preview strong {
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.progress-rail {
+  position: fixed;
+  z-index: 21;
+  top: 50%;
+  right: 1.15rem;
+  width: 0.35rem;
+  height: 9rem;
+  background: rgba(247, 251, 255, 0.14);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.progress-rail::before,
+.progress-rail::after {
+  position: absolute;
+  left: 50%;
+  color: rgba(247, 251, 255, 0.62);
+  font-size: 0.72rem;
+  font-weight: 900;
+  transform: translateX(-50%);
+}
+
+.progress-rail::before {
+  content: "01";
+  top: -1.7rem;
+}
+
+.progress-rail::after {
+  content: "04";
+  bottom: -1.7rem;
+}
+
+.progress-rail span {
+  display: block;
+  width: 100%;
+  height: 22%;
+  background: var(--ink);
+  transform: translateY(0);
+}
+
+.scroll-spacer {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .site-header {
+    top: 1.5rem;
+    left: 1.25rem;
+    right: 1.25rem;
+    grid-template-columns: auto 1fr;
+  }
+
+  .top-nav {
+    display: none;
+  }
+
+  .header-actions {
+    gap: 0.55rem;
+  }
+
+  .sound-toggle {
+    display: none;
+  }
+
+  .header-actions .dark {
+    display: none;
+  }
+
+  .menu-panel {
+    top: 5rem;
+    right: 1.25rem;
+    width: calc(100vw - 2.5rem);
+  }
+
+  h1 {
+    font-size: 4rem;
+  }
+
+  h2 {
+    font-size: 3.25rem;
+  }
+
+  .hero-copy,
+  .final-copy {
+    width: calc(100vw - 2.5rem);
+  }
+
+  .offset-copy,
+  .chapter-heading {
+    left: 1.25rem;
+    right: 1.25rem;
+  }
+
+  .offset-copy {
+    top: 24%;
+  }
+
+  .chapter-heading {
+    top: 7rem;
+  }
+
+  .capability-grid {
+    left: 1.25rem;
+    right: 1.25rem;
+    bottom: 2rem;
+    grid-template-columns: 1fr;
+  }
+
+  .capability-item {
+    min-height: 6rem;
+    padding: 1rem 0;
+  }
+
+  .capability-item:nth-child(odd) {
+    border-right: 0;
+  }
+
+  .capability-title {
+    font-size: 2.25rem;
+  }
+
+  .capability-desc {
+    display: none;
+  }
+
+  .floating-captions {
+    display: none;
+  }
+
+  .site-footer {
+    left: 1.25rem;
+    right: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .scene-hud {
+    left: 1.25rem;
+    bottom: 1.35rem;
+  }
+
+  .hover-preview,
+  .cursor-core,
+  .cursor-ring {
+    display: none;
+  }
+
+  .stage-note,
+  .plus-b,
+  .plus-c,
+  .rail-bottom {
+    display: none;
+  }
+
+  .plus-a {
+    left: 1.25rem;
+  }
+
+  .plus-d {
+    right: 1.25rem;
+  }
+
+  .rail-left {
+    left: 1.25rem;
+    width: 7rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .brand-mark span:last-child {
+    display: none;
+  }
+
+  h1 {
+    font-size: 2.9rem;
+  }
+
+  h2,
+  .chapter-heading h2 {
+    font-size: 2.4rem;
+  }
+
+  .chapter-copy p,
+  .chapter-heading p {
+    font-size: 0.98rem;
+  }
+
+  .progress-rail {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}
+
+    </style>
+  </head>
+  <body class="is-loading">
+    <canvas id="scene-canvas" aria-hidden="true"></canvas>
+    <div class="light-field" aria-hidden="true"></div>
+    <div class="noise-layer" aria-hidden="true"></div>
+    <div class="stage-chrome" aria-hidden="true">
+      <span class="stage-plus plus-a"></span>
+      <span class="stage-plus plus-b"></span>
+      <span class="stage-plus plus-c"></span>
+      <span class="stage-plus plus-d"></span>
+      <span class="stage-rail rail-left"></span>
+      <span class="stage-rail rail-bottom"></span>
+      <span class="stage-note note-left">AI IS NOW</span>
+      <span class="stage-note note-right">LIVE SYSTEM</span>
+    </div>
+    <div class="preloader" aria-hidden="true">
+      <div class="preloader-mark">AI</div>
+      <div class="preloader-meter"><span></span></div>
+      <p>INITIALIZING AI ERA</p>
+    </div>
+    <div class="cursor-core" aria-hidden="true"></div>
+    <div class="cursor-ring" aria-hidden="true"></div>
+
+    <header class="site-header" aria-label="&#20027;&#23548;&#33322;">
+      <a class="brand-mark" href="#top" aria-label="&#22238;&#21040;&#39030;&#37096;">
+        <span class="brand-glyph" aria-hidden="true"></span>
+        <span>AI ERA</span>
+      </a>
+
+      <nav class="top-nav" aria-label="&#31456;&#33410;">
+        <a href="#interface" data-nav-target="interface">&#26102;&#20195;</a>
+        <a href="#capabilities" data-nav-target="capabilities">&#33021;&#21147;</a>
+        <a href="#future" data-nav-target="future">&#26410;&#26469;</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="sound-toggle" type="button" aria-pressed="false" aria-label="&#20999;&#25442;&#29615;&#22659;&#22768;">
+          <span></span><span></span><span></span>
+        </button>
+        <a class="pill-button dark" href="mailto:hello@example.com">
+          <span class="roll-text">
+            <span>LET'S TALK</span>
+            <span>LET'S TALK</span>
+          </span>
+        </a>
+        <button class="pill-button light menu-toggle" type="button" aria-expanded="false">
+          <span class="roll-text">
+            <span>MENU</span>
+            <span>CLOSE</span>
+          </span>
+          <span class="button-dots" aria-hidden="true">
+            <i></i><i></i>
+          </span>
+        </button>
+      </div>
+    </header>
+
+    <aside class="menu-panel" aria-label="&#33756;&#21333;">
+      <div class="menu-links">
+        <a href="#top"><span>&#39318;&#39029;</span><span>&#39318;&#39029;</span></a>
+        <a href="#interface"><span>&#26102;&#20195;</span><span>&#26102;&#20195;</span></a>
+        <a href="#capabilities"><span>&#33021;&#21147;</span><span>&#33021;&#21147;</span></a>
+        <a href="#future"><span>&#26410;&#26469;</span><span>&#26410;&#26469;</span></a>
+      </div>
+      <div class="menu-note">
+        <p>&#35753;&#26234;&#33021;&#25104;&#20026;&#27599;&#20010;&#20154;&#30340;&#29983;&#20135;&#21147;&#12290;</p>
+        <a href="mailto:hello@example.com">&#26500;&#24314;&#26410;&#26469;</a>
+      </div>
+    </aside>
+
+    <main id="top" class="experience-shell">
+      <section class="chapter chapter-hero is-active" data-chapter="hero" aria-label="&#36814;&#25509; AI &#26102;&#20195;">
+        <div class="chapter-copy hero-copy">
+          <h1 data-scramble="&#36814;&#25509; AI &#26102;&#20195;">&#36814;&#25509; AI &#26102;&#20195;</h1>
+          <p>&#20174;&#24037;&#20855;&#21040;&#20249;&#20276;&#65292;&#26234;&#33021;&#27491;&#22312;&#25104;&#20026;&#26032;&#30340;&#29983;&#20135;&#30028;&#38754;&#12290;</p>
+          <a class="primary-cta" href="#interface">
+            <span>&#24320;&#22987;&#25506;&#32034;</span>
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M4 10h10.4M10.8 5.5 15.3 10l-4.5 4.5" />
+            </svg>
+          </a>
+        </div>
+        <p class="scroll-hint">SCROLL TO EXPLORE</p>
+      </section>
+
+      <section id="interface" class="chapter chapter-interface" data-chapter="interface" aria-label="&#26032;&#30340;&#26234;&#33021;&#30028;&#38754;">
+        <div class="chapter-copy offset-copy">
+          <h2 data-scramble="&#26032;&#30340;&#26234;&#33021;&#30028;&#38754;">&#26032;&#30340;&#26234;&#33021;&#30028;&#38754;</h2>
+          <p>&#20174;&#24037;&#20855;&#21040;&#20249;&#20276;&#65292;&#30028;&#38754;&#24320;&#22987;&#29702;&#35299;&#24847;&#22270;&#12290;</p>
+        </div>
+        <div class="floating-captions" aria-hidden="true">
+          <span>intent stream</span>
+          <span>model memory</span>
+          <span>human loop</span>
+        </div>
+      </section>
+
+      <section id="capabilities" class="chapter chapter-capabilities" data-chapter="capabilities" aria-label="AI &#33021;&#21147;&#27169;&#22359;">
+        <div class="chapter-heading">
+          <h2 data-scramble="&#33021;&#21147;&#27491;&#22312;&#37325;&#32452;">&#33021;&#21147;&#27491;&#22312;&#37325;&#32452;</h2>
+          <p>&#20845;&#20010;&#27169;&#22359;&#21482;&#26159;&#21344;&#20301;&#65292;&#21518;&#32493;&#21487;&#20197;&#26367;&#25442;&#25104;&#30495;&#23454;&#19994;&#21153;&#20869;&#23481;&#12290;</p>
+        </div>
+        <div class="capability-grid" role="list"></div>
+      </section>
+
+      <section id="future" class="chapter chapter-future" data-chapter="future" aria-label="&#36827;&#20837;&#26032;&#30340;&#21327;&#20316;&#32426;&#20803;">
+        <div class="chapter-copy final-copy">
+          <h2 data-scramble="&#36827;&#20837;&#26032;&#30340;&#21327;&#20316;&#32426;&#20803;">&#36827;&#20837;&#26032;&#30340;&#21327;&#20316;&#32426;&#20803;</h2>
+          <p>&#35753;&#26234;&#33021;&#25104;&#20026;&#27599;&#20010;&#20154;&#30340;&#29983;&#20135;&#21147;&#12290;</p>
+          <a class="primary-cta light-cta" href="mailto:hello@example.com">
+            <span>&#26500;&#24314;&#26410;&#26469;</span>
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M4 10h10.4M10.8 5.5 15.3 10l-4.5 4.5" />
+            </svg>
+          </a>
+        </div>
+        <footer class="site-footer">
+          <span>AI ERA</span>
+          <a href="#top">TOP</a>
+          <a href="#capabilities">CAPABILITIES</a>
+          <a href="mailto:hello@example.com">CONTACT</a>
+        </footer>
+      </section>
+    </main>
+
+    <div class="scene-hud" aria-hidden="true">
+      <span class="scene-index">01</span>
+      <span class="scene-name">CORE ONLINE</span>
+    </div>
+
+    <div class="hover-preview" aria-hidden="true">
+      <span class="hover-preview-index">00</span>
+      <strong>AI MODULE</strong>
+      <em>hover a capability</em>
+    </div>
+
+    <div class="progress-rail" aria-hidden="true">
+      <span></span>
+    </div>
+
+    <div class="scroll-spacer" aria-hidden="true"></div>
+    <script data-inline="content">
+(function () {
+  window.AIEraContent = {
+    chapters: [
+      {
+        id: "hero",
+        title: "\u8fce\u63a5 AI \u65f6\u4ee3",
+        body: "\u4ece\u5de5\u5177\u5230\u4f19\u4f34\uff0c\u667a\u80fd\u6b63\u5728\u6210\u4e3a\u65b0\u7684\u751f\u4ea7\u754c\u9762\u3002",
+        start: 0,
+        end: 0.24,
+        preset: "core"
+      },
+      {
+        id: "interface",
+        title: "\u65b0\u7684\u667a\u80fd\u754c\u9762",
+        body: "\u4ece\u5de5\u5177\u5230\u4f19\u4f34\uff0c\u754c\u9762\u5f00\u59cb\u7406\u89e3\u610f\u56fe\u3002",
+        start: 0.22,
+        end: 0.48,
+        preset: "stream"
+      },
+      {
+        id: "capabilities",
+        title: "\u80fd\u529b\u6b63\u5728\u91cd\u7ec4",
+        body: "\u516d\u4e2a\u6a21\u5757\u53ea\u662f\u5360\u4f4d\uff0c\u540e\u7eed\u53ef\u4ee5\u66ff\u6362\u6210\u771f\u5b9e\u4e1a\u52a1\u5185\u5bb9\u3002",
+        start: 0.46,
+        end: 0.76,
+        preset: "modules"
+      },
+      {
+        id: "future",
+        title: "\u8fdb\u5165\u65b0\u7684\u534f\u4f5c\u7eaa\u5143",
+        body: "\u8ba9\u667a\u80fd\u6210\u4e3a\u6bcf\u4e2a\u4eba\u7684\u751f\u4ea7\u529b\u3002",
+        start: 0.74,
+        end: 1,
+        preset: "portal"
+      }
+    ],
+    capabilities: [
+      {
+        label: "\u8ba4\u77e5",
+        description: "\u628a\u590d\u6742\u4fe1\u606f\u538b\u7f29\u6210\u53ef\u884c\u52a8\u7684\u5224\u65ad\u3002",
+        accent: "#76d8ff",
+        noiseSeed: 3,
+        sceneTarget: "cognition"
+      },
+      {
+        label: "\u521b\u9020",
+        description: "\u8ba9\u8349\u56fe\u3001\u8bed\u8a00\u548c\u60f3\u6cd5\u66f4\u5feb\u53d8\u6210\u4f5c\u54c1\u3002",
+        accent: "#fff4d7",
+        noiseSeed: 7,
+        sceneTarget: "creation"
+      },
+      {
+        label: "\u534f\u4f5c",
+        description: "\u628a\u4eba\u3001\u6d41\u7a0b\u548c\u667a\u80fd\u4f53\u7f16\u6392\u5728\u540c\u4e00\u754c\u9762\u3002",
+        accent: "#9ee7ff",
+        noiseSeed: 11,
+        sceneTarget: "collaboration"
+      },
+      {
+        label: "\u51b3\u7b56",
+        description: "\u5728\u53d8\u5316\u91cc\u627e\u5230\u4e0b\u4e00\u6b65\u7684\u9ad8\u7f6e\u4fe1\u8def\u5f84\u3002",
+        accent: "#b3f4e7",
+        noiseSeed: 17,
+        sceneTarget: "decision"
+      },
+      {
+        label: "\u81ea\u52a8\u5316",
+        description: "\u8ba9\u91cd\u590d\u4efb\u52a1\u6c89\u5165\u540e\u53f0\uff0c\u8ba9\u6ce8\u610f\u529b\u56de\u5230\u521b\u9020\u3002",
+        accent: "#8ac7ff",
+        noiseSeed: 23,
+        sceneTarget: "automation"
+      },
+      {
+        label: "\u5b89\u5168",
+        description: "\u628a\u8fb9\u754c\u3001\u5ba1\u8ba1\u548c\u4fe1\u4efb\u653e\u8fdb\u7cfb\u7edf\u5e95\u5c42\u3002",
+        accent: "#ffffff",
+        noiseSeed: 29,
+        sceneTarget: "safety"
+      }
+    ]
+  };
+})();
+
+    </script>
+    <script data-inline="experience">
+(function () {
+  const content = window.AIEraContent;
+  const canvas = document.getElementById("scene-canvas");
+  const chapters = Array.from(document.querySelectorAll(".chapter"));
+  const progressRail = document.querySelector(".progress-rail");
+  const progressFill = document.querySelector(".progress-rail span");
+  const capabilityGrid = document.querySelector(".capability-grid");
+  const menuToggle = document.querySelector(".menu-toggle");
+  const menuPanel = document.querySelector(".menu-panel");
+  const soundToggle = document.querySelector(".sound-toggle");
+  const cursorCore = document.querySelector(".cursor-core");
+  const cursorRing = document.querySelector(".cursor-ring");
+  const sceneIndex = document.querySelector(".scene-index");
+  const sceneName = document.querySelector(".scene-name");
+  const hoverPreview = document.querySelector(".hover-preview");
+  const hoverPreviewIndex = document.querySelector(".hover-preview-index");
+  const hoverPreviewTitle = document.querySelector(".hover-preview strong");
+  const hoverPreviewDesc = document.querySelector(".hover-preview em");
+  const topNavLinks = Array.from(document.querySelectorAll("[data-nav-target]"));
+  const scrambleTimers = new WeakMap();
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const state = {
+    progress: 0,
+    targetProgress: 0,
+    activeChapterId: "hero",
+    activeCapabilityIndex: -1,
+    mouseX: 0,
+    mouseY: 0,
+    targetMouseX: 0,
+    targetMouseY: 0,
+    pointerX: window.innerWidth / 2,
+    pointerY: window.innerHeight / 2,
+    cursorX: window.innerWidth / 2,
+    cursorY: window.innerHeight / 2,
+    lastScrambleId: "",
+    inputOverrideUntil: 0,
+    lastTouchY: null
+  };
+
+  const chapterHud = {
+    hero: ["01", "CORE ONLINE"],
+    interface: ["02", "INTENT STREAM"],
+    capabilities: ["03", "MODULE WALL"],
+    future: ["04", "PORTAL READY"]
+  };
+
+  const randomChars = "AI\u65f6\u4ee301<>+=#";
+
+  function clamp01(value) {
+    if (Number.isNaN(value)) return 0;
+    return Math.min(1, Math.max(0, value));
+  }
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function smoothstep(edge0, edge1, value) {
+    const x = clamp01((value - edge0) / Math.max(0.001, edge1 - edge0));
+    return x * x * (3 - 2 * x);
+  }
+
+  function getScrollProgress() {
+    const travel = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    return clamp01(window.scrollY / travel);
+  }
+
+  function getActiveChapter(progress) {
+    return (
+      content.chapters.reduce((active, chapter) => {
+        const inRange = progress >= chapter.start && progress <= chapter.end;
+        if (!inRange) return active;
+        if (!active || chapter.start >= active.start) return chapter;
+        return active;
+      }, null) || content.chapters[content.chapters.length - 1]
+    );
+  }
+
+  function getLocalProgress(chapter, progress) {
+    return clamp01((progress - chapter.start) / Math.max(0.001, chapter.end - chapter.start));
+  }
+
+  function scrollToProgress(progress) {
+    const nextProgress = clamp01(progress);
+    state.targetProgress = nextProgress;
+    state.progress = nextProgress;
+    state.inputOverrideUntil = performance.now() + 900;
+    updateProgressIndicator();
+    updateChapterLayers();
+  }
+
+  function runScramble(element, finalText) {
+    if (!element || reducedMotion) {
+      if (element) element.textContent = finalText;
+      return;
+    }
+
+    window.clearInterval(scrambleTimers.get(element));
+
+    let frame = 0;
+    const totalFrames = 18;
+    const timer = window.setInterval(() => {
+      const resolved = Math.floor((frame / totalFrames) * finalText.length);
+      const next = finalText
+        .split("")
+        .map((char, index) => {
+          if (char.trim() === "") return char;
+          if (index < resolved) return char;
+          return randomChars[(index + frame * 3) % randomChars.length];
+        })
+        .join("");
+
+      element.textContent = next;
+      frame += 1;
+
+      if (frame > totalFrames) {
+        window.clearInterval(timer);
+        element.textContent = finalText;
+        element.dataset.scrambling = "false";
+      }
+    }, 28);
+
+    element.dataset.scrambling = "true";
+    scrambleTimers.set(element, timer);
+    window.setTimeout(() => {
+      if (element.dataset.scrambling === "true") {
+        window.clearInterval(scrambleTimers.get(element));
+        element.textContent = finalText;
+        element.dataset.scrambling = "false";
+      }
+    }, totalFrames * 34);
+  }
+
+  function buildCapabilities() {
+    capabilityGrid.innerHTML = "";
+
+    content.capabilities.forEach((capability, index) => {
+      const item = document.createElement("button");
+      item.type = "button";
+      item.className = "capability-item";
+      item.setAttribute("role", "listitem");
+      item.setAttribute("aria-label", `${capability.label}: ${capability.description}`);
+      item.dataset.index = String(index);
+      item.innerHTML = `
+        <span class="capability-kicker">${String(index + 1).padStart(2, "0")} / ${capability.sceneTarget}</span>
+        <span class="capability-title" data-title="${capability.label}">${capability.label}</span>
+        <span class="capability-desc">${capability.description}</span>
+      `;
+
+      const focusCapability = () => {
+        const alreadyFocused = state.activeCapabilityIndex === index && item.classList.contains("is-focused");
+        state.activeCapabilityIndex = index;
+        document.querySelectorAll(".capability-item").forEach((node) => node.classList.remove("is-focused"));
+        item.classList.add("is-focused");
+        showHoverPreview(capability, index);
+        if (!alreadyFocused) {
+          const title = item.querySelector(".capability-title");
+          runScramble(title, capability.label);
+        }
+      };
+
+      const clearCapability = () => {
+        if (state.activeCapabilityIndex === index) {
+          state.activeCapabilityIndex = -1;
+          item.classList.remove("is-focused");
+          hideHoverPreview();
+        }
+      };
+
+      item.addEventListener("mouseenter", focusCapability);
+      item.addEventListener("pointerenter", focusCapability);
+      item.addEventListener("pointermove", focusCapability);
+      item.addEventListener("click", focusCapability);
+      item.addEventListener("focus", focusCapability);
+      item.addEventListener("mouseleave", clearCapability);
+      item.addEventListener("pointerleave", clearCapability);
+      item.addEventListener("blur", clearCapability);
+
+      capabilityGrid.appendChild(item);
+    });
+  }
+
+  function updateProgressIndicator() {
+    if (!progressRail || !progressFill) return;
+    const travel = Math.max(0, progressRail.clientHeight - progressFill.clientHeight);
+    progressFill.style.transform = `translateY(${travel * state.progress}px)`;
+  }
+
+  function showHoverPreview(capability, index) {
+    if (!hoverPreview || !hoverPreviewIndex || !hoverPreviewTitle || !hoverPreviewDesc) return;
+    hoverPreviewIndex.textContent = `${String(index + 1).padStart(2, "0")} / ${capability.sceneTarget}`;
+    hoverPreviewTitle.textContent = capability.label;
+    hoverPreviewDesc.textContent = capability.description;
+    hoverPreview.classList.add("is-visible");
+  }
+
+  function hideHoverPreview() {
+    if (!hoverPreview) return;
+    hoverPreview.classList.remove("is-visible");
+  }
+
+  function clearCapabilityFocus() {
+    state.activeCapabilityIndex = -1;
+    document.querySelectorAll(".capability-item").forEach((node) => node.classList.remove("is-focused"));
+    hideHoverPreview();
+  }
+
+  function updateSceneHud(active) {
+    if (!sceneIndex || !sceneName) return;
+    const [index, name] = chapterHud[active.id] || chapterHud.hero;
+    sceneIndex.textContent = index;
+    sceneName.textContent = name;
+
+    topNavLinks.forEach((link) => {
+      link.classList.toggle("is-active", link.dataset.navTarget === active.id);
+    });
+  }
+
+  function updateChapterLayers() {
+    const active = getActiveChapter(state.progress);
+    const chapterChanged = active.id !== state.activeChapterId;
+    state.activeChapterId = active.id;
+    updateSceneHud(active);
+
+    if (active.id !== "capabilities" && state.activeCapabilityIndex !== -1) {
+      clearCapabilityFocus();
+    }
+
+    chapters.forEach((section) => {
+      const config = content.chapters.find((chapter) => chapter.id === section.dataset.chapter);
+      if (!config) return;
+
+      const enter = config.start === 0 ? 1 : smoothstep(config.start - 0.08, config.start + 0.02, state.progress);
+      const exit = config.end === 1 ? 1 : 1 - smoothstep(config.end - 0.02, config.end + 0.08, state.progress);
+      const visible = clamp01(Math.min(enter, exit));
+      const local = getLocalProgress(config, state.progress);
+      const y = (1 - visible) * 42 - local * 18;
+
+      const visualOpacity = visible > 0.18 ? visible : 0;
+
+      section.classList.toggle("is-active", visualOpacity > 0.28);
+      section.style.opacity = String(visualOpacity);
+      section.style.transform = `translateY(${y}px)`;
+      section.style.visibility = visualOpacity > 0.08 ? "visible" : "hidden";
+      section.style.pointerEvents = visualOpacity > 0.38 ? "auto" : "none";
+    });
+
+    if (chapterChanged) {
+      document.querySelectorAll(`[data-chapter="${active.id}"] [data-scramble]`).forEach((element) => {
+        runScramble(element, element.getAttribute("data-scramble") || element.textContent || "");
+      });
+    }
+
+    if (state.lastScrambleId === "") {
+      state.lastScrambleId = active.id;
+    }
+  }
+
+  function updateFromScroll() {
+    state.targetProgress = clamp01(state.targetProgress);
+  }
+
+  function nudgeProgress(delta) {
+    state.targetProgress = clamp01(state.targetProgress + delta);
+    state.inputOverrideUntil = performance.now() + 700;
+  }
+
+  function updateCursor() {
+    if (!cursorCore || !cursorRing) return;
+    state.cursorX += (state.pointerX - state.cursorX) * 0.18;
+    state.cursorY += (state.pointerY - state.cursorY) * 0.18;
+    const transform = `translate3d(${state.cursorX}px, ${state.cursorY}px, 0) translate(-50%, -50%)`;
+    cursorCore.style.transform = transform;
+    cursorRing.style.transform = transform;
+  }
+
+  function startExperienceLoop() {
+    const tick = () => {
+      const ease = reducedMotion ? 1 : 0.09;
+      state.progress += (state.targetProgress - state.progress) * ease;
+      if (Math.abs(state.targetProgress - state.progress) < 0.0005) {
+        state.progress = state.targetProgress;
+      }
+
+      updateProgressIndicator();
+      updateChapterLayers();
+      updateCursor();
+      window.requestAnimationFrame(tick);
+    };
+
+    tick();
+  }
+
+  function wireNavigation() {
+    const targets = {
+      "#top": 0,
+      "#interface": 0.28,
+      "#capabilities": 0.56,
+      "#future": 0.86
+    };
+
+    document.addEventListener("click", (event) => {
+      const link = event.target.closest('a[href^="#"]');
+      if (!link) return;
+
+      const target = link.getAttribute("href");
+      if (!(target in targets)) return;
+
+      event.preventDefault();
+      document.body.classList.remove("menu-open");
+      menuToggle.setAttribute("aria-expanded", "false");
+      scrollToProgress(targets[target]);
+    });
+
+    menuToggle.addEventListener("click", () => {
+      const isOpen = document.body.classList.toggle("menu-open");
+      menuToggle.setAttribute("aria-expanded", String(isOpen));
+    });
+
+    soundToggle.addEventListener("click", () => {
+      const isOn = soundToggle.getAttribute("aria-pressed") !== "true";
+      soundToggle.setAttribute("aria-pressed", String(isOn));
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && document.body.classList.contains("menu-open")) {
+        document.body.classList.remove("menu-open");
+        menuToggle.setAttribute("aria-expanded", "false");
+        menuToggle.focus();
+      }
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!document.body.classList.contains("menu-open")) return;
+      if (menuPanel.contains(event.target) || menuToggle.contains(event.target)) return;
+      document.body.classList.remove("menu-open");
+      menuToggle.setAttribute("aria-expanded", "false");
+    });
+  }
+
+  function wirePointer() {
+    window.addEventListener(
+      "pointermove",
+      (event) => {
+        state.pointerX = event.clientX;
+        state.pointerY = event.clientY;
+        state.targetMouseX = (event.clientX / window.innerWidth - 0.5) * 2;
+        state.targetMouseY = (event.clientY / window.innerHeight - 0.5) * 2;
+      },
+      { passive: true }
+    );
+
+    document.addEventListener(
+      "pointerover",
+      (event) => {
+        document.body.classList.toggle(
+          "is-interacting",
+          Boolean(event.target.closest("a, button, .capability-item"))
+        );
+      },
+      { passive: true }
+    );
+
+    document.addEventListener(
+      "pointerout",
+      (event) => {
+        if (!event.relatedTarget || !event.relatedTarget.closest?.("a, button, .capability-item")) {
+          document.body.classList.remove("is-interacting");
+        }
+      },
+      { passive: true }
+    );
+  }
+
+  function wireVirtualScroll() {
+    window.addEventListener(
+      "wheel",
+      (event) => {
+        if (document.body.classList.contains("menu-open")) return;
+        nudgeProgress(event.deltaY / Math.max(window.innerHeight * 4.5, 1));
+      },
+      { passive: true }
+    );
+
+    window.addEventListener(
+      "touchstart",
+      (event) => {
+        state.lastTouchY = event.touches[0]?.clientY ?? null;
+      },
+      { passive: true }
+    );
+
+    window.addEventListener(
+      "touchmove",
+      (event) => {
+        if (document.body.classList.contains("menu-open")) return;
+        const nextY = event.touches[0]?.clientY ?? null;
+        if (state.lastTouchY === null || nextY === null) {
+          state.lastTouchY = nextY;
+          return;
+        }
+        nudgeProgress((state.lastTouchY - nextY) / Math.max(window.innerHeight * 3.8, 1));
+        state.lastTouchY = nextY;
+      },
+      { passive: true }
+    );
+
+    window.addEventListener("touchend", () => {
+      state.lastTouchY = null;
+    });
+  }
+
+  async function bootScene() {
+    let booted = false;
+    const startFallback = (error) => {
+      if (booted) return;
+      booted = true;
+      initCanvasFallback();
+    };
+
+    const fallbackTimer = window.setTimeout(startFallback, 1200);
+
+    try {
+      const THREE = await import("https://esm.sh/three@0.165.0");
+      if (booted) return;
+      window.clearTimeout(fallbackTimer);
+      initThreeScene(THREE);
+      booted = true;
+    } catch (error) {
+      window.clearTimeout(fallbackTimer);
+      startFallback(error);
+    }
+  }
+
+  function initThreeScene(THREE) {
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: true,
+      powerPreference: "high-performance"
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, reducedMotion ? 1 : 1.6));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.setClearColor(0x050608, 1);
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x050608, 0.035);
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 0.3, 8.5);
+
+    const keyLight = new THREE.PointLight(0x76d8ff, 4.4, 18);
+    keyLight.position.set(-3, 2.8, 4);
+    const warmLight = new THREE.PointLight(0xfff4d7, 3, 22);
+    warmLight.position.set(4, -2, 6);
+    const ambient = new THREE.AmbientLight(0xffffff, 0.42);
+    scene.add(keyLight, warmLight, ambient);
+
+    const root = new THREE.Group();
+    const coreGroup = new THREE.Group();
+    const streamGroup = new THREE.Group();
+    const moduleGroup = new THREE.Group();
+    const portalGroup = new THREE.Group();
+    scene.add(root);
+    root.add(coreGroup, streamGroup, moduleGroup, portalGroup);
+
+    const nebulaPalette = [
+      { hex: "#22d9ff", rgb: [34, 217, 255] },
+      { hex: "#7cecff", rgb: [124, 236, 255] },
+      { hex: "#f5c25b", rgb: [245, 194, 91] },
+      { hex: "#ff9b38", rgb: [255, 155, 56] },
+      { hex: "#ff5d3f", rgb: [255, 93, 63] },
+      { hex: "#ffe5a3", rgb: [255, 229, 163] },
+      { hex: "#7d5cff", rgb: [125, 92, 255] }
+    ];
+
+    function createNebulaTexture() {
+      const textureCanvas = document.createElement("canvas");
+      const size = reducedMotion ? 512 : 1024;
+      textureCanvas.width = size;
+      textureCanvas.height = size;
+      const context = textureCanvas.getContext("2d");
+      let seed = 7331;
+      const random = () => {
+        seed = (seed * 16807) % 2147483647;
+        return (seed - 1) / 2147483646;
+      };
+      const color = (entry, alpha) => `rgba(${entry.rgb[0]}, ${entry.rgb[1]}, ${entry.rgb[2]}, ${alpha})`;
+
+      const base = context.createRadialGradient(size * 0.52, size * 0.48, size * 0.02, size * 0.5, size * 0.5, size * 0.76);
+      base.addColorStop(0, "rgba(9, 14, 18, 1)");
+      base.addColorStop(0.46, "rgba(4, 8, 12, 1)");
+      base.addColorStop(0.78, "rgba(1, 3, 6, 1)");
+      base.addColorStop(1, "rgba(0, 1, 3, 1)");
+      context.fillStyle = base;
+      context.fillRect(0, 0, size, size);
+
+      const zones = [
+        { x: 0.74, y: 0.2, rx: 0.34, ry: 0.19, rotation: -0.36, colors: [5, 2, 3], strength: 0.5 },
+        { x: 0.72, y: 0.63, rx: 0.36, ry: 0.32, rotation: -0.2, colors: [0, 1, 6], strength: 0.64 },
+        { x: 0.28, y: 0.34, rx: 0.25, ry: 0.2, rotation: 0.42, colors: [4, 3, 2], strength: 0.34 },
+        { x: 0.34, y: 0.82, rx: 0.34, ry: 0.18, rotation: 0.2, colors: [2, 5, 3], strength: 0.4 },
+        { x: 0.48, y: 0.56, rx: 0.42, ry: 0.3, rotation: 0.16, colors: [0, 2, 4], strength: 0.18 }
+      ];
+
+      context.globalCompositeOperation = "screen";
+      zones.forEach((zone) => {
+        const entry = nebulaPalette[zone.colors[0]];
+        context.save();
+        context.translate(zone.x * size, zone.y * size);
+        context.rotate(zone.rotation);
+        context.scale(zone.rx * size, zone.ry * size);
+        const haze = context.createRadialGradient(0, 0, 0.04, 0, 0, 1);
+        haze.addColorStop(0, color(entry, zone.strength));
+        haze.addColorStop(0.36, color(entry, zone.strength * 0.26));
+        haze.addColorStop(1, color(entry, 0));
+        context.fillStyle = haze;
+        context.beginPath();
+        context.arc(0, 0, 1, 0, Math.PI * 2);
+        context.fill();
+        context.restore();
+      });
+
+      context.globalCompositeOperation = "lighter";
+      zones.forEach((zone, zoneIndex) => {
+        const strokeCount = reducedMotion ? 28 : 76;
+        for (let index = 0; index < strokeCount; index += 1) {
+          const entry = nebulaPalette[zone.colors[index % zone.colors.length]];
+          const localX = (random() - 0.5) * zone.rx * size * 2;
+          const localY = (random() - 0.5) * zone.ry * size * 2;
+          const cos = Math.cos(zone.rotation);
+          const sin = Math.sin(zone.rotation);
+          const startX = zone.x * size + localX * cos - localY * sin;
+          const startY = zone.y * size + localX * sin + localY * cos;
+          const drift = (random() - 0.3) * size * (0.18 + zone.rx * 0.9);
+          const lift = (random() - 0.5) * size * (0.08 + zone.ry * 0.6);
+
+          context.beginPath();
+          context.moveTo(startX, startY);
+          context.bezierCurveTo(
+            startX + drift * 0.28,
+            startY + lift - size * (0.04 + zoneIndex * 0.004),
+            startX + drift * 0.76,
+            startY - lift + size * 0.05,
+            startX + drift,
+            startY + (random() - 0.5) * size * 0.16
+          );
+          context.strokeStyle = color(entry, 0.045 + random() * 0.13);
+          context.lineWidth = 0.8 + random() * (zoneIndex < 2 ? 6.2 : 3.8);
+          context.shadowBlur = 18 + random() * 34;
+          context.shadowColor = color(entry, 0.56);
+          context.stroke();
+        }
+      });
+
+      context.shadowBlur = 0;
+      for (let index = 0; index < (reducedMotion ? 2200 : 7200); index += 1) {
+        const zone = random() < 0.82 ? zones[Math.floor(random() * zones.length)] : null;
+        const entry = zone
+          ? nebulaPalette[zone.colors[Math.floor(random() * zone.colors.length)]]
+          : nebulaPalette[Math.floor(random() * nebulaPalette.length)];
+        const x = zone ? (zone.x + (random() - 0.5) * zone.rx * 2.8) * size : random() * size;
+        const y = zone ? (zone.y + (random() - 0.5) * zone.ry * 2.8) * size : random() * size;
+        const alpha = zone ? 0.06 + random() * 0.28 : 0.02 + random() * 0.08;
+        const radius = random() < 0.88 ? 0.45 + random() * 1.05 : 1.2 + random() * 2.6;
+        context.fillStyle = color(entry, alpha);
+        context.fillRect(x, y, radius, radius);
+      }
+
+      context.globalCompositeOperation = "screen";
+      for (let index = 0; index < 18; index += 1) {
+        const zone = zones[index % zones.length];
+        const entry = nebulaPalette[zone.colors[index % zone.colors.length]];
+        const gradient = context.createRadialGradient(
+          (zone.x + (random() - 0.5) * zone.rx) * size,
+          (zone.y + (random() - 0.5) * zone.ry) * size,
+          size * 0.015,
+          zone.x * size,
+          zone.y * size,
+          size * (0.1 + random() * 0.18)
+        );
+        gradient.addColorStop(0, color(entry, 0.24));
+        gradient.addColorStop(1, color(entry, 0));
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, size, size);
+      }
+
+      context.globalCompositeOperation = "source-over";
+      const darkCore = context.createRadialGradient(size * 0.52, size * 0.48, size * 0.08, size * 0.5, size * 0.5, size * 0.58);
+      darkCore.addColorStop(0, "rgba(0, 2, 4, 0.42)");
+      darkCore.addColorStop(0.38, "rgba(0, 3, 7, 0.28)");
+      darkCore.addColorStop(0.78, "rgba(0, 3, 7, 0.08)");
+      darkCore.addColorStop(1, "rgba(0, 0, 0, 0)");
+      context.fillStyle = darkCore;
+      context.fillRect(0, 0, size, size);
+
+      context.globalCompositeOperation = "source-over";
+      const texture = new THREE.CanvasTexture(textureCanvas);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.anisotropy = 4;
+      return texture;
+    }
+
+    function createReferenceSphereTexture() {
+      const textureCanvas = document.createElement("canvas");
+      const size = reducedMotion ? 512 : 1024;
+      textureCanvas.width = size;
+      textureCanvas.height = size;
+      const context = textureCanvas.getContext("2d");
+      const texture = new THREE.CanvasTexture(textureCanvas);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = 4;
+      texture.userData.ready = false;
+      texture.userData.context = context;
+      texture.userData.image = null;
+      texture.userData.lastPhase = -1;
+      texture.userData.size = size;
+
+      const image = new Image();
+      image.onload = () => {
+        texture.userData.image = image;
+        redrawReferenceSphereTexture(texture, 0);
+        texture.userData.ready = true;
+      };
+      image.src = "./assets/ai-core-sphere-cutout.png";
+
+      return texture;
+    }
+
+    function redrawReferenceSphereTexture(texture, phase) {
+      const { context, image, size } = texture.userData;
+      if (!context || !image) return;
+
+      const normalizedPhase = ((phase % 1) + 1) % 1;
+      const offset = normalizedPhase * size;
+      const driftY = Math.sin(normalizedPhase * Math.PI * 2) * size * 0.018;
+
+      context.clearRect(0, 0, size, size);
+      context.drawImage(image, 0, 0, size, size);
+
+      context.save();
+      context.beginPath();
+      context.arc(size * 0.5, size * 0.5, size * 0.493, 0, Math.PI * 2);
+      context.clip();
+      context.globalCompositeOperation = "screen";
+      context.globalAlpha = reducedMotion ? 0.12 : 0.26;
+      context.drawImage(image, -offset, driftY, size, size);
+      context.drawImage(image, size - offset, driftY, size, size);
+      context.restore();
+
+      context.save();
+      context.globalCompositeOperation = "destination-in";
+      context.drawImage(image, 0, 0, size, size);
+      context.restore();
+
+      texture.userData.lastPhase = normalizedPhase;
+      texture.needsUpdate = true;
+    }
+
+    const nebulaTexture = createNebulaTexture();
+    const referenceTexture = createReferenceSphereTexture();
+    const referenceMotionTexture = referenceTexture.clone();
+    referenceMotionTexture.wrapS = THREE.RepeatWrapping;
+    referenceMotionTexture.wrapT = THREE.RepeatWrapping;
+    referenceMotionTexture.userData.synced = false;
+    const nebulaColors = nebulaPalette.map((entry) => new THREE.Color(entry.hex));
+
+    const coreMaterial = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      map: nebulaTexture,
+      transparent: true,
+      opacity: 0.48,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+
+    const core = new THREE.Mesh(new THREE.SphereGeometry(1.46, 96, 64), coreMaterial);
+    core.scale.setScalar(0.84);
+    core.renderOrder = 2.04;
+    const referenceSphere = new THREE.Sprite(
+      new THREE.SpriteMaterial({
+        map: referenceTexture,
+        transparent: true,
+        opacity: 0,
+        blending: THREE.NormalBlending,
+        depthWrite: false
+      })
+    );
+    referenceSphere.scale.set(2.92, 2.92, 1);
+    referenceSphere.renderOrder = 2;
+    const referenceMotionSphere = new THREE.Sprite(
+      new THREE.SpriteMaterial({
+        map: referenceMotionTexture,
+        transparent: true,
+        opacity: 0,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+      })
+    );
+    referenceMotionSphere.scale.set(2.92, 2.92, 1);
+    referenceMotionSphere.renderOrder = 2.2;
+    const rotatingAtmosphere = new THREE.Mesh(
+      new THREE.SphereGeometry(1.23, 128, 72),
+      new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        map: nebulaTexture,
+        transparent: true,
+        opacity: 0,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        depthTest: false
+      })
+    );
+    rotatingAtmosphere.scale.setScalar(0.82);
+    rotatingAtmosphere.renderOrder = 2.15;
+    const innerGlow = new THREE.Mesh(
+      new THREE.SphereGeometry(0.88, 48, 32),
+      new THREE.MeshBasicMaterial({
+        color: 0x22d9ff,
+        transparent: true,
+        opacity: 0.22,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+      })
+    );
+    const rimGlow = new THREE.Mesh(
+      new THREE.SphereGeometry(1.68, 96, 48),
+      new THREE.MeshBasicMaterial({
+        color: 0xf5c25b,
+        side: THREE.BackSide,
+        transparent: true,
+        opacity: 0.3,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+      })
+    );
+
+    let sphereSeed = 9817;
+    const sphereRandom = () => {
+      sphereSeed = (sphereSeed * 16807) % 2147483647;
+      return (sphereSeed - 1) / 2147483646;
+    };
+    const sphereClusters = [
+      { theta: -0.16, y: 0.54, spreadTheta: 0.7, spreadY: 0.36, colors: [5, 2, 3] },
+      { theta: 0.12, y: -0.24, spreadTheta: 0.82, spreadY: 0.54, colors: [0, 1, 6] },
+      { theta: 0.34, y: -0.48, spreadTheta: 0.72, spreadY: 0.4, colors: [0, 1, 0] },
+      { theta: Math.PI - 0.16, y: 0.12, spreadTheta: 0.58, spreadY: 0.42, colors: [4, 3, 2] },
+      { theta: Math.PI + 0.24, y: -0.62, spreadTheta: 0.68, spreadY: 0.32, colors: [2, 5, 3] }
+    ];
+
+    const surfaceDotGeometry = new THREE.BufferGeometry();
+    const surfaceDotCount = reducedMotion ? 220 : 960;
+    const surfaceDotPositions = new Float32Array(surfaceDotCount * 3);
+    const surfaceDotColors = new Float32Array(surfaceDotCount * 3);
+
+    for (let index = 0; index < surfaceDotPositions.length / 3; index += 1) {
+      const cluster = sphereClusters[index % sphereClusters.length];
+      const y = clamp(cluster.y + (sphereRandom() - 0.5) * cluster.spreadY, -0.94, 0.94);
+      const theta = cluster.theta + (sphereRandom() - 0.5) * cluster.spreadTheta;
+      const latitude = Math.sqrt(Math.max(0.02, 1 - y * y));
+      const radius = 1.47 + sphereRandom() * 0.08;
+      surfaceDotPositions[index * 3] = Math.cos(theta) * latitude * radius;
+      surfaceDotPositions[index * 3 + 1] = y * radius;
+      surfaceDotPositions[index * 3 + 2] = Math.sin(theta) * latitude * radius;
+      const dotColor = nebulaColors[cluster.colors[index % cluster.colors.length]].clone().lerp(new THREE.Color(0xffffff), 0.12);
+      surfaceDotColors[index * 3] = dotColor.r;
+      surfaceDotColors[index * 3 + 1] = dotColor.g;
+      surfaceDotColors[index * 3 + 2] = dotColor.b;
+    }
+
+    surfaceDotGeometry.setAttribute("position", new THREE.BufferAttribute(surfaceDotPositions, 3));
+    surfaceDotGeometry.setAttribute("color", new THREE.BufferAttribute(surfaceDotColors, 3));
+    const surfaceDots = new THREE.Points(
+      surfaceDotGeometry,
+      new THREE.PointsMaterial({
+        size: reducedMotion ? 0.023 : 0.024,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.92,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+      })
+    );
+
+    const mistCount = reducedMotion ? 520 : 2200;
+    const mistGeometry = new THREE.BufferGeometry();
+    const mistPositions = new Float32Array(mistCount * 3);
+    const mistColors = new Float32Array(mistCount * 3);
+    for (let index = 0; index < mistCount; index += 1) {
+      const cluster = sphereClusters[Math.floor(sphereRandom() * sphereClusters.length)];
+      const y = clamp(cluster.y + (sphereRandom() - 0.5) * cluster.spreadY * 1.24, -0.94, 0.94);
+      const theta = cluster.theta + (sphereRandom() - 0.5) * cluster.spreadTheta * 1.12 + Math.sin(index * 0.21) * 0.08;
+      const latitude = Math.sqrt(Math.max(0.02, 1 - y * y));
+      const radius = 1.14 + sphereRandom() * 0.36 + Math.sin(index * 0.37) * 0.04;
+      mistPositions[index * 3] = Math.cos(theta) * latitude * radius;
+      mistPositions[index * 3 + 1] = y * radius;
+      mistPositions[index * 3 + 2] = Math.sin(theta) * latitude * radius;
+      const mistColor = nebulaColors[cluster.colors[Math.floor(sphereRandom() * cluster.colors.length)]].clone().lerp(new THREE.Color(0xffffff), 0.06);
+      mistColors[index * 3] = mistColor.r;
+      mistColors[index * 3 + 1] = mistColor.g;
+      mistColors[index * 3 + 2] = mistColor.b;
+    }
+    mistGeometry.setAttribute("position", new THREE.BufferAttribute(mistPositions, 3));
+    mistGeometry.setAttribute("color", new THREE.BufferAttribute(mistColors, 3));
+    const nebulaMist = new THREE.Points(
+      mistGeometry,
+      new THREE.PointsMaterial({
+        size: reducedMotion ? 0.022 : 0.023,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.88,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+      })
+    );
+
+    const filamentGroup = new THREE.Group();
+    for (let index = 0; index < (reducedMotion ? 18 : 58); index += 1) {
+      const cluster = sphereClusters[index % sphereClusters.length];
+      const points = [];
+      const yBase = clamp(cluster.y + (sphereRandom() - 0.5) * cluster.spreadY, -0.86, 0.86);
+      const thetaBase = cluster.theta + (sphereRandom() - 0.5) * cluster.spreadTheta;
+      const turn = (sphereRandom() - 0.5) * 0.72;
+      for (let point = 0; point < 9; point += 1) {
+        const t = point / 8;
+        const y = clamp(yBase + Math.sin(t * Math.PI * 2 + index) * 0.12, -0.92, 0.92);
+        const theta = thetaBase + (t - 0.5) * turn + Math.sin(t * Math.PI + index) * 0.08;
+        const latitude = Math.sqrt(Math.max(0.04, 1 - y * y));
+        const radius = 1.2 + sphereRandom() * 0.26;
+        points.push(new THREE.Vector3(
+          Math.cos(theta) * latitude * radius,
+          y * radius,
+          Math.sin(theta) * latitude * radius
+        ));
+      }
+      const filament = new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints(points),
+        new THREE.LineBasicMaterial({
+          color: nebulaColors[cluster.colors[index % cluster.colors.length]].getHex(),
+          transparent: true,
+          opacity: 0.16 + sphereRandom() * 0.1,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        })
+      );
+      filamentGroup.add(filament);
+    }
+
+    const haloCount = reducedMotion ? 1100 : 5600;
+    const haloPositions = new Float32Array(haloCount * 3);
+    const haloColors = new Float32Array(haloCount * 3);
+    const haloAngles = new Float32Array(haloCount);
+    const haloRadii = new Float32Array(haloCount);
+    const haloSpeeds = new Float32Array(haloCount);
+    const haloDepths = new Float32Array(haloCount);
+    const haloLifts = new Float32Array(haloCount);
+    const haloWobbles = new Float32Array(haloCount);
+    const haloPhases = new Float32Array(haloCount);
+    const haloYScales = new Float32Array(haloCount);
+    const haloArms = [
+      { angle: -0.18, spread: 0.72, lift: 0.08, colors: [5, 2, 3] },
+      { angle: 1.34, spread: 0.58, lift: 0.02, colors: [0, 1, 5] },
+      { angle: 2.92, spread: 0.82, lift: -0.02, colors: [0, 1, 6] },
+      { angle: 4.42, spread: 0.68, lift: -0.08, colors: [2, 3, 4] }
+    ];
+
+    function updateHaloParticlePosition(index, seconds) {
+      const offset = index * 3;
+      const angle = haloAngles[index] + seconds * haloSpeeds[index] + Math.sin(seconds * 0.54 + haloPhases[index]) * 0.06;
+      const radius = haloRadii[index] + Math.sin(seconds * 0.78 + haloPhases[index]) * haloWobbles[index];
+      const perspective = 0.92 + Math.cos(angle + haloPhases[index] * 0.23) * 0.1;
+      haloPositions[offset] = Math.cos(angle) * radius * perspective;
+      haloPositions[offset + 1] = Math.sin(angle) * radius * haloYScales[index] + haloLifts[index];
+      haloPositions[offset + 2] = Math.sin(angle * 1.14 + haloPhases[index]) * haloDepths[index];
+    }
+
+    for (let index = 0; index < haloCount; index += 1) {
+      const arm = haloArms[index % haloArms.length];
+      const spiralTurn = (index / haloCount) * Math.PI * 7.6;
+      haloAngles[index] = arm.angle + (sphereRandom() - 0.5) * arm.spread + spiralTurn * 0.18 + Math.sin(index * 0.37) * 0.08;
+      haloRadii[index] = 1.52 + Math.pow(sphereRandom(), 0.62) * 0.78 + (sphereRandom() < 0.22 ? sphereRandom() * 0.36 : 0);
+      haloSpeeds[index] = (0.24 + sphereRandom() * 0.18) * (index % 3 === 0 ? 1.18 : 1);
+      haloDepths[index] = 0.14 + sphereRandom() * 0.34;
+      haloLifts[index] = arm.lift + (sphereRandom() - 0.5) * 0.18;
+      haloWobbles[index] = 0.012 + sphereRandom() * 0.034;
+      haloPhases[index] = sphereRandom() * Math.PI * 2;
+      haloYScales[index] = 0.5 + sphereRandom() * 0.16;
+      updateHaloParticlePosition(index, 0);
+      const hueShift = Math.sin(haloAngles[index] + haloLifts[index] * 2.4);
+      const colorIndex =
+        hueShift > 0.48
+          ? 0
+          : hueShift < -0.42
+            ? 4
+            : arm.colors[Math.floor(sphereRandom() * arm.colors.length)];
+      const haloColor = nebulaColors[colorIndex].clone().lerp(new THREE.Color(0xffffff), 0.06 + sphereRandom() * 0.22);
+      haloColors[index * 3] = haloColor.r;
+      haloColors[index * 3 + 1] = haloColor.g;
+      haloColors[index * 3 + 2] = haloColor.b;
+    }
+    const haloGeometry = new THREE.BufferGeometry();
+    haloGeometry.setAttribute("position", new THREE.BufferAttribute(haloPositions, 3));
+    haloGeometry.setAttribute("color", new THREE.BufferAttribute(haloColors, 3));
+    const sphereParticleHalo = new THREE.Points(
+      haloGeometry,
+      new THREE.PointsMaterial({
+        size: reducedMotion ? 0.016 : 0.0155,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.76,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+      })
+    );
+
+    const scanRing = new THREE.Mesh(
+      new THREE.TorusGeometry(1.76, 0.003, 8, 220),
+      new THREE.MeshBasicMaterial({
+        color: 0xffe5a3,
+        transparent: true,
+        opacity: 0.06,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+      })
+    );
+    scanRing.rotation.set(Math.PI / 2.05, 0.52, -0.28);
+    coreGroup.add(core, referenceSphere, rotatingAtmosphere, referenceMotionSphere, nebulaMist, surfaceDots, sphereParticleHalo);
+
+    const particleCount = reducedMotion ? 860 : 3600;
+    const particlePositions = new Float32Array(particleCount * 3);
+    const particleColors = new Float32Array(particleCount * 3);
+    let spaceSeed = 2441;
+    const spaceRandom = () => {
+      spaceSeed = (spaceSeed * 16807) % 2147483647;
+      return (spaceSeed - 1) / 2147483646;
+    };
+    for (let index = 0; index < particleCount; index += 1) {
+      const radius = 2.3 + Math.pow(spaceRandom(), 0.7) * 7.3;
+      const angle = spaceRandom() * Math.PI * 2;
+      const height = (spaceRandom() - 0.5) * 7.1;
+      particlePositions[index * 3] = Math.cos(angle) * radius;
+      particlePositions[index * 3 + 1] = height;
+      particlePositions[index * 3 + 2] = Math.sin(angle) * radius;
+      const colorPick = angle < Math.PI * 0.65 ? 0 : angle < Math.PI * 1.2 ? 5 : angle < Math.PI * 1.62 ? 4 : 2;
+      const particleColor = nebulaColors[colorPick].clone().lerp(new THREE.Color(0xffffff), spaceRandom() * 0.18);
+      particleColors[index * 3] = particleColor.r;
+      particleColors[index * 3 + 1] = particleColor.g;
+      particleColors[index * 3 + 2] = particleColor.b;
+    }
+    const particleGeometry = new THREE.BufferGeometry();
+    particleGeometry.setAttribute("position", new THREE.BufferAttribute(particlePositions, 3));
+    particleGeometry.setAttribute("color", new THREE.BufferAttribute(particleColors, 3));
+    const particleMaterial = new THREE.PointsMaterial({
+      size: 0.025,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.72,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+    const particles = new THREE.Points(particleGeometry, particleMaterial);
+    root.add(particles);
+
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 0xd9f6ff, transparent: true, opacity: 0.16 });
+    for (let row = -5; row <= 5; row += 1) {
+      const geometry = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(-5.5, row * 0.35, -2),
+        new THREE.Vector3(5.5, row * 0.35, -2)
+      ]);
+      streamGroup.add(new THREE.Line(geometry, lineMaterial));
+    }
+
+    content.capabilities.forEach((capability, index) => {
+      const x = index % 2 === 0 ? -1.8 : 1.8;
+      const y = 1.45 - Math.floor(index / 2) * 1.45;
+      const block = new THREE.Mesh(
+        new THREE.BoxGeometry(1.18, 0.18, 0.78),
+        new THREE.MeshPhysicalMaterial({
+          color: new THREE.Color(capability.accent),
+          emissive: new THREE.Color(capability.accent),
+          emissiveIntensity: 0.2,
+          roughness: 0.25,
+          metalness: 0.16,
+          transparent: true,
+          opacity: 0.24
+        })
+      );
+      block.position.set(x, y, -1.2);
+      block.userData.base = { x, y };
+      moduleGroup.add(block);
+    });
+
+    const portal = new THREE.Group();
+    for (let index = 0; index < 5; index += 1) {
+      const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(1.45 + index * 0.34, 0.012, 12, 180),
+        new THREE.MeshBasicMaterial({
+          color: index % 2 ? 0xfff4d7 : 0x76d8ff,
+          transparent: true,
+          opacity: 0.16
+        })
+      );
+      ring.position.z = -index * 0.24;
+      portal.add(ring);
+    }
+    portalGroup.add(portal);
+    portalGroup.position.set(0, 0, -1.8);
+
+    function resize() {
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+    }
+
+    window.addEventListener("resize", resize);
+
+    function animate(time) {
+      requestAnimationFrame(animate);
+
+      state.mouseX += (state.targetMouseX - state.mouseX) * 0.06;
+      state.mouseY += (state.targetMouseY - state.mouseY) * 0.06;
+
+      const progress = state.progress;
+      const interfacePhase = smoothstep(0.18, 0.48, progress);
+      const modulePhase = smoothstep(0.43, 0.66, progress) * (1 - smoothstep(0.77, 0.88, progress));
+      const portalPhase = smoothstep(0.74, 1, progress);
+      const pulse = Math.sin(time * 0.0012);
+
+      camera.position.x = state.mouseX * 0.25 + Math.sin(progress * Math.PI * 1.6) * 0.55;
+      camera.position.y = 0.3 - progress * 0.65 - state.mouseY * 0.16;
+      camera.position.z = 8.4 - progress * 3.7;
+      camera.lookAt(0, -0.05, 0);
+
+      root.rotation.y = progress * 1.5 + state.mouseX * 0.05;
+      root.rotation.x = -state.mouseY * 0.035;
+      core.rotation.x = Math.sin(time * 0.00032) * 0.22 + state.mouseY * 0.05;
+      core.rotation.y = time * 0.00115 + progress * 1.1 + state.mouseX * 0.08;
+      core.rotation.z = Math.sin(time * 0.0002) * 0.05;
+      nebulaTexture.offset.x = (time * 0.000045) % 1;
+      nebulaTexture.offset.y = Math.sin(time * 0.00022) * 0.016;
+      if (referenceTexture.userData.ready && !referenceMotionTexture.userData.synced) {
+        referenceMotionTexture.needsUpdate = true;
+        referenceMotionTexture.userData.synced = true;
+      }
+      coreMaterial.opacity = referenceTexture.userData.ready ? 0.5 + Math.abs(pulse) * 0.08 : 0.52;
+      referenceSphere.material.opacity = referenceTexture.userData.ready ? 0.62 + Math.abs(pulse) * 0.04 : 0;
+      referenceSphere.material.rotation = -time * 0.00026;
+      const referenceScale = 2.92 + pulse * 0.025 + interfacePhase * 0.04;
+      referenceSphere.scale.set(referenceScale, referenceScale, 1);
+      rotatingAtmosphere.rotation.y = time * 0.00145 + progress * 1.05 + state.mouseX * 0.055;
+      rotatingAtmosphere.rotation.x = 0.16 + Math.sin(time * 0.00034) * 0.11 + state.mouseY * 0.03;
+      rotatingAtmosphere.rotation.z = -0.16 + Math.sin(time * 0.00018) * 0.035;
+      rotatingAtmosphere.material.opacity = referenceTexture.userData.ready ? 0.09 + Math.abs(pulse) * 0.03 : 0;
+      referenceMotionTexture.offset.x = (time * 0.00032 + progress * 0.18) % 1;
+      referenceMotionTexture.offset.y = Math.sin(time * 0.00034) * 0.034;
+      referenceMotionSphere.material.opacity = referenceTexture.userData.ready ? 0.28 + Math.abs(pulse) * 0.07 : 0;
+      referenceMotionSphere.material.rotation = -time * 0.00034;
+      referenceMotionSphere.scale.set(referenceScale * 1.006, referenceScale * 1.006, 1);
+      filamentGroup.rotation.y = -time * 0.00022 + state.mouseX * 0.035;
+      filamentGroup.rotation.x = Math.sin(time * 0.00016) * 0.06 + state.mouseY * 0.025;
+      surfaceDots.rotation.y = time * 0.00105 + progress * 0.85;
+      surfaceDots.rotation.x = Math.sin(time * 0.0003) * 0.16 + state.mouseY * 0.03;
+      nebulaMist.rotation.y = -time * 0.00118 + progress * 0.72;
+      nebulaMist.rotation.x = Math.sin(time * 0.00032) * 0.14 + state.mouseY * 0.03;
+      nebulaMist.material.opacity = (0.24 + Math.abs(pulse) * 0.08 + modulePhase * 0.08) * (1 - portalPhase * 0.12);
+      surfaceDots.material.opacity = 0.38 + Math.abs(pulse) * 0.11 + modulePhase * 0.06;
+      if (!reducedMotion) {
+        const haloSeconds = time * 0.001 + progress * 1.2;
+        for (let index = 0; index < haloCount; index += 1) {
+          updateHaloParticlePosition(index, haloSeconds);
+        }
+        haloGeometry.attributes.position.needsUpdate = true;
+      }
+      sphereParticleHalo.rotation.y = -0.22 + progress * 0.34 + state.mouseX * 0.045;
+      sphereParticleHalo.rotation.x = -0.08 + Math.sin(time * 0.0002) * 0.06 + state.mouseY * 0.04;
+      sphereParticleHalo.rotation.z = -time * 0.00042;
+      sphereParticleHalo.material.opacity = (0.66 + Math.abs(pulse) * 0.16 + modulePhase * 0.08) * (1 - portalPhase * 0.08);
+      sphereParticleHalo.material.size = (reducedMotion ? 0.016 : 0.0155) + modulePhase * 0.003 + portalPhase * 0.002;
+      scanRing.rotation.z = time * 0.00022;
+      innerGlow.scale.setScalar(1 + pulse * 0.09 + interfacePhase * 0.08);
+      innerGlow.material.opacity = 0.06 + Math.abs(pulse) * 0.04 + interfacePhase * 0.04;
+      scanRing.material.opacity = (0.025 + Math.abs(pulse) * 0.035) * (1 - portalPhase * 0.25);
+      coreGroup.scale.setScalar(1.52 - interfacePhase * 0.26 + portalPhase * 0.1 + pulse * 0.01);
+
+      streamGroup.position.z = -2 + interfacePhase * 2.2;
+      streamGroup.position.x = -0.8 + interfacePhase * 1.2;
+      streamGroup.rotation.z = -0.16 + progress * 0.32;
+      streamGroup.children.forEach((line, index) => {
+        line.material.opacity = (interfacePhase * 0.18) * (1 - portalPhase * 0.7);
+        line.position.x = Math.sin(time * 0.0006 + index) * 0.28;
+      });
+
+      particles.rotation.y = time * 0.00012 + progress * 1.9;
+      particles.rotation.x = progress * 0.32;
+      particleMaterial.opacity = 0.44 + interfacePhase * 0.32 + modulePhase * 0.18;
+      particleMaterial.size = 0.022 + modulePhase * 0.016 + portalPhase * 0.01;
+
+      moduleGroup.visible = modulePhase > 0.02;
+      moduleGroup.position.z = -0.8 + modulePhase * 0.8;
+      moduleGroup.rotation.y = -0.22 + state.mouseX * 0.08;
+      moduleGroup.children.forEach((block, index) => {
+        const focused = state.activeCapabilityIndex === index;
+        block.material.opacity = modulePhase * (focused ? 0.72 : 0.32);
+        block.scale.setScalar(focused ? 1.34 : 1);
+        block.position.z = -1.2 + modulePhase * 0.7 + (focused ? 0.24 : 0);
+        block.rotation.y = focused ? Math.sin(time * 0.002) * 0.16 : 0;
+      });
+
+      portalGroup.visible = portalPhase > 0.02;
+      portalGroup.scale.setScalar(0.62 + portalPhase * 1.65);
+      portalGroup.rotation.z = time * 0.00018;
+      portal.children.forEach((ring, index) => {
+        ring.material.opacity = portalPhase * (0.08 + index * 0.035);
+        ring.rotation.z = time * 0.0001 * (index + 1);
+      });
+
+      keyLight.intensity = 2.6 + interfacePhase * 1.8 + modulePhase * 1.2;
+      warmLight.intensity = 1.2 + portalPhase * 3.4;
+      renderer.render(scene, camera);
+    }
+
+    animate(0);
+  }
+
+  function initCanvasFallback() {
+    const context = canvas.getContext("2d");
+    const nebulaPalette = [
+      [47, 231, 255],
+      [124, 236, 255],
+      [255, 209, 102],
+      [255, 155, 66],
+      [255, 91, 110],
+      [139, 92, 255],
+      [68, 255, 187]
+    ];
+    const paletteColor = (index, alpha) => {
+      const color = nebulaPalette[((index % nebulaPalette.length) + nebulaPalette.length) % nebulaPalette.length];
+      return `rgba(${color[0]},${color[1]},${color[2]},${alpha})`;
+    };
+    const particles = Array.from({ length: reducedMotion ? 120 : 420 }, (_, index) => ({
+      angle: index * 0.73,
+      radius: 80 + Math.random() * 420,
+      depth: Math.random(),
+      speed: 0.002 + Math.random() * 0.003,
+      color: index % nebulaPalette.length
+    }));
+
+    function resize() {
+      const ratio = Math.min(window.devicePixelRatio || 1, reducedMotion ? 1 : 1.6);
+      canvas.width = Math.floor(window.innerWidth * ratio);
+      canvas.height = Math.floor(window.innerHeight * ratio);
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    }
+
+    function drawCore(centerX, centerY, time) {
+      const viewportSize = Math.min(window.innerWidth, window.innerHeight);
+      const size = Math.max(178, Math.min(330, viewportSize * 0.43)) - state.progress * 34;
+      context.save();
+      context.translate(centerX, centerY);
+      context.rotate(time * 0.00028 + state.progress * 1.8);
+
+      const shell = context.createRadialGradient(0, 0, size * 0.1, 0, 0, size * 1.18);
+      shell.addColorStop(0, "rgba(255,229,163,0.2)");
+      shell.addColorStop(0.26, "rgba(47,231,255,0.28)");
+      shell.addColorStop(0.58, "rgba(255,91,64,0.2)");
+      shell.addColorStop(0.82, "rgba(124,236,255,0.2)");
+      shell.addColorStop(1, "rgba(47,231,255,0)");
+      context.fillStyle = shell;
+      context.beginPath();
+      context.arc(0, 0, size * 1.2, 0, Math.PI * 2);
+      context.fill();
+
+      const body = context.createRadialGradient(-size * 0.3, -size * 0.36, size * 0.08, 0, 0, size * 1.05);
+      body.addColorStop(0, "rgba(255,229,163,0.42)");
+      body.addColorStop(0.2, "rgba(245,194,91,0.22)");
+      body.addColorStop(0.4, "rgba(6,15,20,0.86)");
+      body.addColorStop(0.62, "rgba(1,5,10,0.92)");
+      body.addColorStop(0.84, "rgba(34,217,255,0.42)");
+      body.addColorStop(1, "rgba(255,93,63,0.26)");
+      context.fillStyle = body;
+      context.beginPath();
+      context.arc(0, 0, size * 1.03, 0, Math.PI * 2);
+      context.fill();
+
+      const clusterGlows = [
+        { x: 0.46, y: -0.48, rx: 0.44, ry: 0.2, color: "rgba(255,229,163,0.58)" },
+        { x: 0.54, y: 0.38, rx: 0.42, ry: 0.33, color: "rgba(34,217,255,0.56)" },
+        { x: -0.62, y: -0.12, rx: 0.32, ry: 0.26, color: "rgba(255,93,63,0.28)" },
+        { x: -0.32, y: 0.72, rx: 0.42, ry: 0.18, color: "rgba(245,194,91,0.42)" }
+      ];
+      context.globalCompositeOperation = "lighter";
+      clusterGlows.forEach((zone, index) => {
+        context.save();
+        context.translate(zone.x * size, zone.y * size);
+        context.rotate(index * 0.48 + time * 0.00008);
+        context.scale(zone.rx * size, zone.ry * size);
+        const gradient = context.createRadialGradient(0, 0, 0.04, 0, 0, 1);
+        gradient.addColorStop(0, zone.color);
+        gradient.addColorStop(0.42, zone.color.replace(/0\.\d+\)/, "0.14)"));
+        gradient.addColorStop(1, "rgba(0,0,0,0)");
+        context.fillStyle = gradient;
+        context.beginPath();
+        context.arc(0, 0, 1, 0, Math.PI * 2);
+        context.fill();
+        context.restore();
+      });
+
+      context.save();
+      context.beginPath();
+      context.arc(0, 0, size * 1.02, 0, Math.PI * 2);
+      context.clip();
+      context.globalCompositeOperation = "lighter";
+      for (let index = 0; index < (reducedMotion ? 48 : 96); index += 1) {
+        const angle = index * 2.399 + time * 0.00011;
+        const offset = Math.sin(index * 1.73 + time * 0.00018) * size * 0.38;
+        const radius = size * (0.18 + ((index * 7) % 31) / 31 * 0.76);
+        const startX = Math.cos(angle) * radius;
+        const startY = Math.sin(angle * 0.74) * radius * 0.62 + offset * 0.18;
+        const pull = size * (0.18 + (index % 5) * 0.055);
+        context.beginPath();
+        context.moveTo(startX, startY);
+        context.bezierCurveTo(
+          startX + Math.cos(angle + 1.2) * pull,
+          startY + Math.sin(angle + 0.4) * pull * 0.52,
+          startX + Math.cos(angle + 2.4) * pull * 1.8,
+          startY + Math.sin(angle + 1.8) * pull * 0.86,
+          startX + Math.cos(angle + 3.1) * pull * 2.35,
+          startY + Math.sin(angle + 2.1) * pull * 0.72
+        );
+        context.strokeStyle = paletteColor(index + Math.floor(time * 0.00004), 0.06 + (index % 4) * 0.022);
+        context.lineWidth = 0.95 + (index % 6) * 0.44;
+        context.stroke();
+      }
+
+      for (let index = 0; index < (reducedMotion ? 140 : 300); index += 1) {
+        const angle = index * 2.399 + time * 0.00008;
+        const y = Math.sin(index * 1.27 + time * 0.00016) * size * 0.88;
+        const radius = Math.sqrt(Math.max(0, size * size - y * y));
+        const x = Math.cos(angle) * radius;
+        context.fillStyle = paletteColor(index, 0.08 + (index % 7) * 0.024);
+        context.fillRect(x, y * 0.58, 0.9 + (index % 4) * 0.5, 0.9 + (index % 4) * 0.5);
+      }
+      context.globalCompositeOperation = "source-over";
+      context.restore();
+
+      context.globalCompositeOperation = "lighter";
+      context.shadowBlur = 18;
+      context.lineWidth = 1.25;
+      [
+        { color: "rgba(255,229,163,0.52)", start: -0.1, end: 1.25 },
+        { color: "rgba(34,217,255,0.5)", start: 0.56, end: 2.26 },
+        { color: "rgba(255,93,63,0.36)", start: 2.64, end: 3.78 }
+      ].forEach((arc, index) => {
+        context.shadowColor = arc.color;
+        context.strokeStyle = arc.color;
+        context.beginPath();
+        context.arc(0, 0, size * (1.01 + index * 0.02), arc.start + time * 0.00008, arc.end + time * 0.00008);
+        context.stroke();
+      });
+      context.shadowBlur = 0;
+
+      for (let index = 0; index < (reducedMotion ? 180 : 560); index += 1) {
+        const cluster = index % 4;
+        const baseAngles = [-0.26, 0.26, 2.98, -2.04];
+        const baseY = [-0.48, 0.34, -0.04, 0.66];
+        const angle = baseAngles[cluster] + Math.sin(index * 17.17) * 0.58 + time * (0.00008 + cluster * 0.000012);
+        const y = (baseY[cluster] + Math.sin(index * 9.31 + time * 0.00016) * 0.28) * size;
+        const latitude = Math.sqrt(Math.max(0.05, 1 - (y / size) * (y / size)));
+        const radius = size * (1.02 + Math.pow((Math.sin(index * 3.7) + 1) / 2, 1.6) * 0.42);
+        const x = Math.cos(angle) * radius * latitude;
+        const zFade = 0.42 + Math.max(0, Math.sin(angle)) * 0.44;
+        const colorIndex = cluster === 0 ? 5 : cluster === 1 ? 0 : cluster === 2 ? 4 : 2;
+        context.fillStyle = paletteColor(colorIndex, (0.16 + (index % 7) * 0.026) * zFade);
+        const dot = 0.9 + ((index * 13) % 5) * 0.45;
+        context.fillRect(x, y * 0.76, dot, dot);
+      }
+
+      for (let index = 0; index < 42; index += 1) {
+        const angle = index * 2.399 + time * 0.0002;
+        const y = Math.sin(index * 1.7) * size * 0.82;
+        const radius = Math.sqrt(Math.max(0, size * size - y * y));
+        const x = Math.cos(angle) * radius;
+        const zScale = 0.4 + Math.sin(angle) * 0.18;
+        context.fillStyle = paletteColor(index, 0.26 + (index % 5) * 0.08);
+        context.beginPath();
+        context.arc(x, y * zScale, 1.2 + (index % 3) * 0.35, 0, Math.PI * 2);
+        context.fill();
+      }
+
+      context.restore();
+    }
+
+    function drawModules(width, height) {
+      const phase = smoothstep(0.43, 0.68, state.progress) * (1 - smoothstep(0.77, 0.88, state.progress));
+      if (phase <= 0.02) return;
+      const left = width * 0.58;
+      const top = height * 0.26;
+      context.save();
+      context.globalAlpha = phase;
+      content.capabilities.forEach((capability, index) => {
+        const focused = state.activeCapabilityIndex === index;
+        const x = left + (index % 2) * 130;
+        const y = top + Math.floor(index / 2) * 92;
+        context.strokeStyle = focused ? capability.accent : "rgba(247,251,255,.18)";
+        context.fillStyle = focused ? "rgba(118,216,255,.12)" : "rgba(247,251,255,.04)";
+        context.lineWidth = focused ? 2 : 1;
+        context.fillRect(x, y, focused ? 94 : 76, 24);
+        context.strokeRect(x, y, focused ? 94 : 76, 24);
+      });
+      context.restore();
+    }
+
+    function drawPortal(width, height, time) {
+      const phase = smoothstep(0.74, 1, state.progress);
+      if (phase <= 0.02) return;
+      context.save();
+      context.translate(width / 2, height * 0.48);
+      context.globalAlpha = phase;
+      for (let index = 0; index < 6; index += 1) {
+        context.strokeStyle = index % 2 ? "rgba(255,244,215,.42)" : "rgba(118,216,255,.36)";
+        context.lineWidth = 1;
+        context.beginPath();
+        context.ellipse(0, 0, 90 + index * 32 + Math.sin(time * 0.001 + index) * 8, 170 + index * 46, 0, 0, Math.PI * 2);
+        context.stroke();
+      }
+      context.restore();
+    }
+
+    function animate(time) {
+      requestAnimationFrame(animate);
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const centerX = width / 2 + state.mouseX * 28;
+      const centerY = height * (0.48 - state.progress * 0.12) + state.mouseY * 18;
+
+      state.mouseX += (state.targetMouseX - state.mouseX) * 0.06;
+      state.mouseY += (state.targetMouseY - state.mouseY) * 0.06;
+
+      context.clearRect(0, 0, width, height);
+      const glow = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, Math.max(width, height) * 0.7);
+      glow.addColorStop(0, `rgba(118,216,255,${0.2 + state.progress * 0.08})`);
+      glow.addColorStop(0.42, "rgba(14,24,38,0.18)");
+      glow.addColorStop(1, "rgba(2,3,4,0.96)");
+      context.fillStyle = glow;
+      context.fillRect(0, 0, width, height);
+
+      particles.forEach((particle) => {
+        particle.angle += particle.speed * (reducedMotion ? 0.2 : 1);
+        const scale = 0.38 + particle.depth * 1.3;
+        const x = centerX + Math.cos(particle.angle + state.progress * 4) * particle.radius * scale;
+        const y = centerY + Math.sin(particle.angle * 0.8) * particle.radius * 0.32 * scale;
+        context.fillStyle = paletteColor(particle.color, 0.12 + particle.depth * 0.4);
+        context.fillRect(x, y, 1.2 + particle.depth * 1.8, 1.2 + particle.depth * 1.8);
+      });
+
+      drawCore(centerX, centerY, time);
+      drawModules(width, height);
+      drawPortal(width, height, time);
+    }
+
+    window.addEventListener("resize", resize);
+    resize();
+    animate(0);
+  }
+
+  buildCapabilities();
+  wireNavigation();
+  wirePointer();
+  wireVirtualScroll();
+  updateFromScroll();
+  state.progress = state.targetProgress;
+  updateProgressIndicator();
+  updateChapterLayers();
+  startExperienceLoop();
+  bootScene();
+
+  window.addEventListener("resize", updateFromScroll);
+
+  window.setTimeout(() => {
+    document.body.classList.add("experience-ready");
+    document.body.classList.remove("is-loading");
+  }, reducedMotion ? 120 : 1350);
+})();
+
+    </script>
+  </body>
+</html>
+
