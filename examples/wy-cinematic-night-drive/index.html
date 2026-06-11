@@ -1,0 +1,748 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A self-contained cinematic night drive website example with scroll-driven motion, canvas particles, and responsive interface panels."
+    />
+    <title>WY Cinematic Night Drive</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #060708;
+        --ink: #f8faf7;
+        --muted: rgba(248, 250, 247, 0.68);
+        --dim: rgba(248, 250, 247, 0.42);
+        --line: rgba(248, 250, 247, 0.18);
+        --amber: #ffcc66;
+        --cyan: #69d2ff;
+        --red: #ff5964;
+        --green: #9fe870;
+        --road: #16181b;
+        --panel: rgba(6, 7, 8, 0.66);
+        --font:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        background: var(--bg);
+        scroll-behavior: smooth;
+      }
+
+      body {
+        min-height: 360vh;
+        margin: 0;
+        background:
+          radial-gradient(circle at 24% 18%, rgba(105, 210, 255, 0.18), transparent 24rem),
+          radial-gradient(circle at 86% 42%, rgba(255, 204, 102, 0.12), transparent 22rem),
+          linear-gradient(180deg, #08090c 0%, #050606 55%, #0d0e0c 100%);
+        color: var(--ink);
+        font-family: var(--font);
+        letter-spacing: 0;
+      }
+
+      body::before {
+        position: fixed;
+        inset: 0;
+        z-index: 5;
+        pointer-events: none;
+        content: "";
+        background:
+          linear-gradient(rgba(255, 255, 255, 0.025) 50%, rgba(0, 0, 0, 0.05) 50%) 0 0 /
+            100% 4px,
+          radial-gradient(circle at 50% 52%, transparent 0 40%, rgba(0, 0, 0, 0.42) 83%);
+        mix-blend-mode: soft-light;
+      }
+
+      a,
+      button {
+        color: inherit;
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      .stage,
+      #stars,
+      .sky,
+      .city,
+      .road,
+      .chrome {
+        position: fixed;
+        inset: 0;
+      }
+
+      .stage {
+        overflow: hidden;
+        perspective: 900px;
+      }
+
+      #stars {
+        z-index: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .sky {
+        z-index: 1;
+        background:
+          linear-gradient(180deg, rgba(12, 15, 24, 0.98) 0%, rgba(8, 10, 13, 0.42) 58%),
+          radial-gradient(circle at 52% 22%, rgba(255, 242, 199, 0.16), transparent 17rem);
+      }
+
+      .moon {
+        position: absolute;
+        top: 12vh;
+        right: 12vw;
+        width: clamp(4rem, 9vw, 8rem);
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background:
+          radial-gradient(circle at 35% 34%, #fff8de 0 7%, transparent 8%),
+          radial-gradient(circle at 67% 58%, rgba(0, 0, 0, 0.16) 0 9%, transparent 10%),
+          #ffe7a8;
+        box-shadow: 0 0 4rem rgba(255, 224, 148, 0.38);
+        transform: translate3d(var(--moon-x, 0), var(--moon-y, 0), 0);
+      }
+
+      .city {
+        z-index: 2;
+        display: flex;
+        align-items: flex-end;
+        gap: min(0.8vw, 0.7rem);
+        padding: 0 2vw 34vh;
+        transform: translateY(var(--city-y, 0));
+      }
+
+      .tower {
+        flex: 1;
+        min-width: 1.8rem;
+        height: var(--h);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.09), transparent 22%),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.06), transparent 42%),
+          #11151a;
+        border-top: 1px solid rgba(255, 255, 255, 0.14);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+      }
+
+      .tower::before {
+        display: block;
+        height: 100%;
+        content: "";
+        background-image:
+          linear-gradient(90deg, transparent 0 24%, rgba(255, 204, 102, 0.82) 25% 33%, transparent 34%),
+          linear-gradient(180deg, transparent 0 18%, rgba(105, 210, 255, 0.48) 19% 23%, transparent 24%);
+        background-size: 2.3rem 3.1rem;
+        opacity: var(--light, 0.38);
+      }
+
+      .road {
+        z-index: 3;
+        top: auto;
+        height: 58vh;
+        overflow: hidden;
+        transform-origin: bottom center;
+        transform: rotateX(58deg) translateY(20vh) translateZ(0);
+      }
+
+      .road-surface {
+        position: absolute;
+        inset: 0 18vw -10vh;
+        background:
+          linear-gradient(90deg, transparent 0 47%, rgba(255, 255, 255, 0.08) 48% 52%, transparent 53%),
+          linear-gradient(180deg, transparent 0 10%, rgba(255, 255, 255, 0.18) 10.5% 12%, transparent 12.5%);
+        background-size: 100% 100%, 100% 8rem;
+        background-position: 0 0, 0 var(--lane-y, 0px);
+        clip-path: polygon(44% 0, 56% 0, 96% 100%, 4% 100%);
+      }
+
+      .road-surface::before,
+      .road-surface::after {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 0.22rem;
+        content: "";
+        background: linear-gradient(180deg, transparent, rgba(255, 204, 102, 0.9), transparent);
+        filter: blur(0.02rem);
+      }
+
+      .road-surface::before {
+        left: 35%;
+      }
+
+      .road-surface::after {
+        right: 35%;
+      }
+
+      .headlights {
+        position: absolute;
+        left: 50%;
+        bottom: 2vh;
+        z-index: 4;
+        width: min(58vw, 44rem);
+        height: 48vh;
+        transform: translateX(-50%);
+        background:
+          radial-gradient(ellipse at 34% 94%, rgba(255, 227, 151, 0.75) 0 4%, transparent 22%),
+          radial-gradient(ellipse at 66% 94%, rgba(255, 227, 151, 0.75) 0 4%, transparent 22%),
+          radial-gradient(ellipse at 50% 100%, rgba(255, 204, 102, 0.25), transparent 58%);
+        filter: blur(0.4px);
+        mix-blend-mode: screen;
+      }
+
+      .car {
+        position: fixed;
+        left: 50%;
+        bottom: clamp(1rem, 4vh, 2.8rem);
+        z-index: 6;
+        width: min(42vw, 26rem);
+        min-width: 16rem;
+        aspect-ratio: 2.6 / 1;
+        transform: translateX(-50%) translateY(var(--car-y, 0)) scale(var(--car-scale, 1));
+      }
+
+      .car-body {
+        position: absolute;
+        inset: 36% 4% 16%;
+        border-radius: 0.65rem 0.65rem 0.45rem 0.45rem;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent 40%),
+          linear-gradient(90deg, #161b1f, #2b3237 34%, #111316 100%);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: 0 1.2rem 2.8rem rgba(0, 0, 0, 0.65);
+      }
+
+      .car-body::before {
+        position: absolute;
+        left: 20%;
+        right: 21%;
+        bottom: 94%;
+        height: 48%;
+        content: "";
+        border-radius: 1.5rem 1.5rem 0.2rem 0.2rem;
+        background:
+          linear-gradient(180deg, rgba(105, 210, 255, 0.46), rgba(8, 10, 13, 0.9)),
+          #11161a;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+      }
+
+      .car-body::after {
+        position: absolute;
+        inset: 48% 12% auto;
+        height: 0.28rem;
+        content: "";
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--red), transparent 20% 80%, var(--red));
+        box-shadow: 0 0 1rem rgba(255, 89, 100, 0.58);
+      }
+
+      .wheel {
+        position: absolute;
+        bottom: 0;
+        width: 18%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background:
+          radial-gradient(circle, #0a0b0c 0 32%, #2c343a 34% 50%, #050606 52%),
+          #111;
+        border: 0.35rem solid #070808;
+      }
+
+      .wheel.left {
+        left: 17%;
+      }
+
+      .wheel.right {
+        right: 17%;
+      }
+
+      .chrome {
+        z-index: 8;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        padding: clamp(1rem, 3vw, 2.6rem);
+        pointer-events: none;
+      }
+
+      .topbar,
+      .hud,
+      .chapter-card {
+        pointer-events: auto;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        font-size: 0.86rem;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      .mark {
+        display: grid;
+        width: 2.2rem;
+        aspect-ratio: 1;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--amber);
+      }
+
+      .actions {
+        display: flex;
+        gap: 0.6rem;
+      }
+
+      .actions button {
+        width: 2.5rem;
+        aspect-ratio: 1;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(16px);
+      }
+
+      .actions button:hover {
+        border-color: rgba(255, 255, 255, 0.38);
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      .center-copy {
+        align-self: center;
+        max-width: min(45rem, 72vw);
+        transform: translateY(var(--copy-y, 0));
+      }
+
+      .kicker {
+        margin: 0 0 1rem;
+        color: var(--amber);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        max-width: 12ch;
+        margin: 0;
+        font-size: clamp(3.4rem, 10vw, 9rem);
+        line-height: 0.9;
+        letter-spacing: 0;
+      }
+
+      .lead {
+        max-width: 39rem;
+        margin: 1.3rem 0 0;
+        color: var(--muted);
+        font-size: clamp(1rem, 1.7vw, 1.2rem);
+        line-height: 1.7;
+      }
+
+      .chapter-card {
+        align-self: end;
+        width: min(29rem, 100%);
+        padding: 1rem;
+        border: 1px solid var(--line);
+        border-radius: 0.5rem;
+        background: var(--panel);
+        backdrop-filter: blur(22px);
+        box-shadow: 0 1.2rem 4rem rgba(0, 0, 0, 0.3);
+      }
+
+      .chapter-card header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 0.7rem;
+        color: var(--dim);
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .chapter-card h2 {
+        margin: 0;
+        font-size: clamp(1.25rem, 2vw, 1.7rem);
+        line-height: 1.15;
+      }
+
+      .chapter-card p {
+        margin: 0.65rem 0 0;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .meter {
+        height: 0.28rem;
+        margin-top: 0.95rem;
+        overflow: hidden;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      .meter span {
+        display: block;
+        width: var(--progress, 0%);
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--amber), var(--cyan), var(--green));
+      }
+
+      .hud {
+        position: fixed;
+        right: clamp(1rem, 3vw, 2.6rem);
+        top: 50%;
+        z-index: 9;
+        display: grid;
+        gap: 0.55rem;
+        transform: translateY(-50%);
+      }
+
+      .dot {
+        width: 0.7rem;
+        aspect-ratio: 1;
+        border: 1px solid rgba(255, 255, 255, 0.45);
+        border-radius: 50%;
+        background: transparent;
+        opacity: 0.55;
+      }
+
+      .dot.is-active {
+        background: var(--amber);
+        border-color: var(--amber);
+        box-shadow: 0 0 1.2rem rgba(255, 204, 102, 0.75);
+        opacity: 1;
+      }
+
+      .scroll-hint {
+        position: fixed;
+        left: 50%;
+        bottom: 1rem;
+        z-index: 9;
+        width: 1.55rem;
+        height: 2.55rem;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 999px;
+        transform: translateX(-50%);
+      }
+
+      .scroll-hint::before {
+        position: absolute;
+        left: 50%;
+        top: 0.52rem;
+        width: 0.28rem;
+        aspect-ratio: 1;
+        content: "";
+        border-radius: 50%;
+        background: var(--ink);
+        transform: translateX(-50%);
+        animation: wheel 1.7s infinite;
+      }
+
+      @keyframes wheel {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, 0);
+        }
+        30% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, 0.95rem);
+        }
+      }
+
+      @media (max-width: 760px) {
+        body {
+          min-height: 390vh;
+        }
+
+        .chrome {
+          padding: 1rem;
+        }
+
+        .center-copy {
+          max-width: 92vw;
+          align-self: start;
+          padding-top: 21vh;
+        }
+
+        h1 {
+          max-width: 10ch;
+          font-size: clamp(3.1rem, 17vw, 5.7rem);
+        }
+
+        .lead {
+          max-width: 23rem;
+          font-size: 0.98rem;
+        }
+
+        .chapter-card {
+          margin-bottom: 4.2rem;
+        }
+
+        .hud {
+          top: auto;
+          right: 1rem;
+          bottom: 1rem;
+          grid-auto-flow: column;
+          transform: none;
+        }
+
+        .scroll-hint {
+          display: none;
+        }
+
+        .city {
+          padding-bottom: 38vh;
+        }
+
+        .car {
+          width: 78vw;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        .scroll-hint::before {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="stage" aria-label="WY Cinematic Night Drive example">
+      <canvas id="stars" aria-hidden="true"></canvas>
+      <section class="sky" aria-hidden="true">
+        <div class="moon"></div>
+      </section>
+      <section class="city" aria-hidden="true">
+        <div class="tower" style="--h: 18vh; --light: 0.28"></div>
+        <div class="tower" style="--h: 28vh; --light: 0.52"></div>
+        <div class="tower" style="--h: 22vh; --light: 0.42"></div>
+        <div class="tower" style="--h: 34vh; --light: 0.62"></div>
+        <div class="tower" style="--h: 24vh; --light: 0.36"></div>
+        <div class="tower" style="--h: 38vh; --light: 0.5"></div>
+        <div class="tower" style="--h: 30vh; --light: 0.46"></div>
+        <div class="tower" style="--h: 43vh; --light: 0.66"></div>
+        <div class="tower" style="--h: 20vh; --light: 0.34"></div>
+        <div class="tower" style="--h: 31vh; --light: 0.58"></div>
+        <div class="tower" style="--h: 25vh; --light: 0.4"></div>
+        <div class="tower" style="--h: 35vh; --light: 0.56"></div>
+      </section>
+      <section class="road" aria-hidden="true">
+        <div class="road-surface"></div>
+      </section>
+      <div class="headlights" aria-hidden="true"></div>
+      <section class="car" aria-hidden="true">
+        <div class="car-body"></div>
+        <div class="wheel left"></div>
+        <div class="wheel right"></div>
+      </section>
+
+      <section class="chrome">
+        <nav class="topbar" aria-label="Example controls">
+          <div class="brand">
+            <span class="mark">WY</span>
+            <span>Night Drive</span>
+          </div>
+          <div class="actions">
+            <button type="button" id="prev" aria-label="Previous chapter">&#8593;</button>
+            <button type="button" id="next" aria-label="Next chapter">&#8595;</button>
+          </div>
+        </nav>
+
+        <section class="center-copy">
+          <p class="kicker">Cinematic site builder example</p>
+          <h1>Drive the frame.</h1>
+          <p class="lead">
+            A static page prototype that uses scroll position as the camera rail: skyline depth,
+            procedural stars, light trails, chapter cards, and a responsive stage with no
+            third-party media.
+          </p>
+        </section>
+
+        <article class="chapter-card" aria-live="polite">
+          <header>
+            <span id="chapter-kicker">Chapter 01</span>
+            <span id="chapter-tag">Establish</span>
+          </header>
+          <h2 id="chapter-title">The city opens in layers.</h2>
+          <p id="chapter-body">
+            Scroll to move the camera through a night scene built from CSS transforms and a
+            lightweight Canvas star field.
+          </p>
+          <div class="meter" aria-hidden="true"><span id="meter"></span></div>
+        </article>
+      </section>
+      <nav class="hud" aria-label="Chapters">
+        <button class="dot is-active" type="button" aria-label="Chapter 1"></button>
+        <button class="dot" type="button" aria-label="Chapter 2"></button>
+        <button class="dot" type="button" aria-label="Chapter 3"></button>
+        <button class="dot" type="button" aria-label="Chapter 4"></button>
+      </nav>
+      <div class="scroll-hint" aria-hidden="true"></div>
+    </main>
+
+    <script>
+      const chapters = [
+        {
+          tag: "Establish",
+          title: "The city opens in layers.",
+          body:
+            "Scroll to move the camera through a night scene built from CSS transforms and a lightweight Canvas star field.",
+        },
+        {
+          tag: "Accelerate",
+          title: "The road becomes the timeline.",
+          body:
+            "Lane markers, car scale, moon drift, and skyline parallax respond to the same normalized scroll value.",
+        },
+        {
+          tag: "Reveal",
+          title: "Every asset is procedural.",
+          body:
+            "The page avoids external images and models, so the example is easy to redistribute and audit.",
+        },
+        {
+          tag: "Arrive",
+          title: "A compact template for cinematic demos.",
+          body:
+            "Use the layout as a starting point for single-page pitches, concept previews, or scroll-driven product stories.",
+        },
+      ];
+
+      const root = document.documentElement;
+      const body = document.body;
+      const meter = document.querySelector("#meter");
+      const kicker = document.querySelector("#chapter-kicker");
+      const tag = document.querySelector("#chapter-tag");
+      const title = document.querySelector("#chapter-title");
+      const text = document.querySelector("#chapter-body");
+      const dots = [...document.querySelectorAll(".dot")];
+      const canvas = document.querySelector("#stars");
+      const ctx = canvas.getContext("2d");
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      let stars = [];
+      let width = 0;
+      let height = 0;
+      let scrollProgress = 0;
+      let activeChapter = 0;
+
+      function resize() {
+        width = canvas.width = Math.floor(window.innerWidth * window.devicePixelRatio);
+        height = canvas.height = Math.floor(window.innerHeight * window.devicePixelRatio);
+        canvas.style.width = `${window.innerWidth}px`;
+        canvas.style.height = `${window.innerHeight}px`;
+        const count = Math.min(170, Math.floor(window.innerWidth / 7));
+        stars = Array.from({ length: count }, (_, index) => ({
+          x: (index * 97 + 53) % width,
+          y: (index * 193 + 101) % Math.max(height * 0.62, 1),
+          r: ((index % 5) + 1) * window.devicePixelRatio * 0.32,
+          speed: 0.12 + (index % 9) * 0.025,
+          pulse: (index % 13) / 13,
+        }));
+      }
+
+      function drawStars(time = 0) {
+        ctx.clearRect(0, 0, width, height);
+        ctx.fillStyle = "#060708";
+        ctx.fillRect(0, 0, width, height);
+        for (const star of stars) {
+          const y = (star.y + scrollProgress * height * star.speed) % Math.max(height, 1);
+          const alpha = 0.36 + Math.sin(time * 0.001 + star.pulse * 6.28) * 0.22;
+          ctx.beginPath();
+          ctx.fillStyle = `rgba(248, 250, 247, ${alpha})`;
+          ctx.arc(star.x, y, star.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      function updateScene() {
+        const maxScroll = Math.max(body.scrollHeight - window.innerHeight, 1);
+        scrollProgress = window.scrollY / maxScroll;
+        const eased = 1 - Math.pow(1 - scrollProgress, 3);
+        root.style.setProperty("--progress", `${scrollProgress * 100}%`);
+        root.style.setProperty("--lane-y", `${scrollProgress * 680}px`);
+        root.style.setProperty("--city-y", `${scrollProgress * 16}vh`);
+        root.style.setProperty("--moon-x", `${scrollProgress * -9}vw`);
+        root.style.setProperty("--moon-y", `${scrollProgress * 10}vh`);
+        root.style.setProperty("--car-y", `${Math.sin(scrollProgress * Math.PI * 4) * 0.18}rem`);
+        root.style.setProperty("--car-scale", `${1 + eased * 0.06}`);
+        root.style.setProperty("--copy-y", `${scrollProgress * -12}vh`);
+
+        const nextChapter = Math.min(chapters.length - 1, Math.floor(scrollProgress * chapters.length));
+        if (nextChapter !== activeChapter) {
+          activeChapter = nextChapter;
+          renderChapter();
+        }
+        meter.style.setProperty("--progress", `${scrollProgress * 100}%`);
+      }
+
+      function renderChapter() {
+        const chapter = chapters[activeChapter];
+        kicker.textContent = `Chapter ${String(activeChapter + 1).padStart(2, "0")}`;
+        tag.textContent = chapter.tag;
+        title.textContent = chapter.title;
+        text.textContent = chapter.body;
+        dots.forEach((dot, index) => dot.classList.toggle("is-active", index === activeChapter));
+      }
+
+      function goToChapter(index) {
+        const target = Math.max(0, Math.min(chapters.length - 1, index));
+        const maxScroll = Math.max(body.scrollHeight - window.innerHeight, 1);
+        window.scrollTo({
+          top: (target / chapters.length + 0.02) * maxScroll,
+          behavior: reducedMotion ? "auto" : "smooth",
+        });
+      }
+
+      document.querySelector("#prev").addEventListener("click", () => goToChapter(activeChapter - 1));
+      document.querySelector("#next").addEventListener("click", () => goToChapter(activeChapter + 1));
+      dots.forEach((dot, index) => dot.addEventListener("click", () => goToChapter(index)));
+      window.addEventListener("scroll", updateScene, { passive: true });
+      window.addEventListener("resize", () => {
+        resize();
+        updateScene();
+      });
+
+      function animate(time) {
+        drawStars(time);
+        if (!reducedMotion) requestAnimationFrame(animate);
+      }
+
+      resize();
+      updateScene();
+      renderChapter();
+      requestAnimationFrame(animate);
+    </script>
+  </body>
+</html>
